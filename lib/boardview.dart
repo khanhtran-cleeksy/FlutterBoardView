@@ -300,9 +300,6 @@ class BoardViewState extends State<BoardView> with AutomaticKeepAliveClientMixin
 
   @override
   Widget build(BuildContext context) {
-    print("dy:${dy}");
-    print("topListY:${topListY}");
-    print("bottomListY:${bottomListY}");
     if(boardViewController.hasClients) {
       WidgetsBinding.instance!.addPostFrameCallback((Duration duration) {
         try {
@@ -325,6 +322,7 @@ class BoardViewState extends State<BoardView> with AutomaticKeepAliveClientMixin
         if (widget.lists![index].boardView == null) {
           widget.lists![index] = BoardList(
             items: widget.lists![index].items,
+            loadMore: widget.lists![index].loadMore,
             headerBackgroundColor: widget.lists![index].headerBackgroundColor,
             backgroundColor: widget.lists![index].backgroundColor,
             footer: widget.lists![index].footer,
@@ -334,11 +332,13 @@ class BoardViewState extends State<BoardView> with AutomaticKeepAliveClientMixin
             onDropList: widget.lists![index].onDropList,
             onTapList: widget.lists![index].onTapList,
             onStartDragList: widget.lists![index].onStartDragList,
+            onLoadMore: widget.lists![index].onLoadMore,
           );
         }
         if (widget.lists![index].index != index) {
           widget.lists![index] = BoardList(
             items: widget.lists![index].items,
+            loadMore: widget.lists![index].loadMore,
             headerBackgroundColor: widget.lists![index].headerBackgroundColor,
             backgroundColor: widget.lists![index].backgroundColor,
             footer: widget.lists![index].footer,
@@ -349,6 +349,7 @@ class BoardViewState extends State<BoardView> with AutomaticKeepAliveClientMixin
             onDropList: widget.lists![index].onDropList,
             onTapList: widget.lists![index].onTapList,
             onStartDragList: widget.lists![index].onStartDragList,
+            onLoadMore: widget.lists![index].onLoadMore,
           );
         }
 
@@ -486,7 +487,6 @@ class BoardViewState extends State<BoardView> with AutomaticKeepAliveClientMixin
               RenderBox _box = _middleWidgetKey.currentContext!
                   .findRenderObject() as RenderBox;
               tempBottom = _box.size.height;
-              print("tempBottom:${tempBottom}");
             }
           }
           if (dy! > tempBottom! - 70) {
