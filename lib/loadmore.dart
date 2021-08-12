@@ -404,7 +404,7 @@ String _buildEnglishText(LoadMoreStatus status) {
       text = "";
       break;
     case LoadMoreStatus.loading:
-      text = "Loading...";
+      text = "";
       break;
     case LoadMoreStatus.nomore:
       text = "";
