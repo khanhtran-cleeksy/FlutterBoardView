@@ -320,7 +320,7 @@ class DefaultLoadMoreViewState extends State<DefaultLoadMoreView> {
   void notify() async {
     var delay = max(delegate.loadMoreDelay(), Duration(milliseconds: 16));
     await Future.delayed(delay);
-    if (widget.status == LoadMoreStatus.idle) {
+    if (widget.status == LoadMoreStatus.idle && mounted) {
       _BuildNotify().dispatch(context);
     }
   }
