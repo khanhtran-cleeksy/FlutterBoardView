@@ -32,6 +32,8 @@ class BoardView extends StatefulWidget {
       this.isSelecting = false,
       this.lists,
       this.width = 350,
+      this.decoration,
+      this.margin,
       this.middleWidget,
       this.bottomPadding})
       : super(key: key);
