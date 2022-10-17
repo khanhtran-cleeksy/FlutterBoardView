@@ -12,6 +12,7 @@ typedef Future<bool> FutureCallBack(int listIndex);
 
 class BoardList extends StatefulWidget {
   final List<Widget>? header;
+  final Widget? customWidget;
   final Widget? footer;
   final List<BoardItem>? items;
   final bool loadMore;
@@ -22,6 +23,8 @@ class BoardList extends StatefulWidget {
   final OnTapList? onTapList;
   final OnStartDragList? onStartDragList;
   final FutureCallBack? onLoadMore;
+  final Decoration? decoration;
+  final EdgeInsets? padding;
   final bool draggable;
 
   const BoardList({
@@ -33,12 +36,15 @@ class BoardList extends StatefulWidget {
     this.backgroundColor,
     this.headerBackgroundColor,
     this.boardView,
+    this.padding = EdgeInsets.zero,
     this.draggable = true,
     this.index,
     this.onDropList,
     this.onTapList,
     this.onStartDragList,
     this.onLoadMore,
+    this.customWidget,
+    this.decoration,
   }) : super(key: key);
 
   final int? index;
@@ -190,14 +196,17 @@ class BoardListState extends State<BoardList>
     }
     widget.boardView!.listStates.insert(widget.index!, this);
 
-    return Container(
-      margin: EdgeInsets.all(8),
-      decoration: BoxDecoration(color: backgroundColor),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: listWidgets as List<Widget>,
-      ),
-    );
+    return widget.customWidget ??
+        Container(
+          margin: EdgeInsets.all(8),
+          padding: widget.padding,
+          decoration:
+              widget.decoration ?? BoxDecoration(color: backgroundColor),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: listWidgets as List<Widget>,
+          ),
+        );
   }
 }

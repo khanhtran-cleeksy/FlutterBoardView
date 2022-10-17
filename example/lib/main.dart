@@ -65,6 +65,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
       ),
       body: BoardView(
         lists: _lists,
+        decoration: BoxDecoration(color: Colors.red),
         boardViewController: boardViewController,
       ),
     );
@@ -124,12 +125,17 @@ class _BoardViewExampleState extends State<BoardViewExample> {
       items: items,
       loadMore: list.itemCount != null && list.items!.length < list.itemCount!,
     );
+
+    // return BoardList(
+    //   customWidget: Container(color: Colors.green, width: 50, height: 50),
+    //   // footer: Container(color: Colors.green, width: 50, height: 50),
+    // );
   }
 
   Future<bool> _onLoadMore(int listIndex) async {
     await Future.delayed(Duration(seconds: 1));
     setState(() {
-      final data =  List.generate(10, (index) {
+      final data = List.generate(10, (index) {
         return BoardItemObject(title: "Item more");
       });
       _listData[listIndex].items!.addAll(data);

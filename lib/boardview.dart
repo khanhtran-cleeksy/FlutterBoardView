@@ -13,6 +13,7 @@ class BoardView extends StatefulWidget {
   double? bottomPadding;
   bool isSelecting;
   double? margin;
+  EdgeInsets? padding;
   Decoration? decoration;
   bool? scrollbar;
   ScrollbarStyle? scrollbarStyle;
@@ -35,6 +36,7 @@ class BoardView extends StatefulWidget {
       this.decoration,
       this.margin,
       this.middleWidget,
+      this.padding,
       this.bottomPadding})
       : super(key: key);
 
@@ -392,6 +394,9 @@ class BoardViewState extends State<BoardView>
             onTapList: widget.lists![index].onTapList,
             onStartDragList: widget.lists![index].onStartDragList,
             onLoadMore: widget.lists![index].onLoadMore,
+            customWidget: widget.lists![index].customWidget,
+            decoration: widget.lists![index].decoration ?? widget.decoration,
+            padding: widget.lists![index].padding ?? widget.padding,
           );
         }
         if (widget.lists![index].index != index) {
@@ -409,6 +414,9 @@ class BoardViewState extends State<BoardView>
             onTapList: widget.lists![index].onTapList,
             onStartDragList: widget.lists![index].onStartDragList,
             onLoadMore: widget.lists![index].onLoadMore,
+            customWidget: widget.lists![index].customWidget,
+            decoration: widget.lists![index].decoration ?? widget.decoration,
+            padding: widget.lists![index].padding ?? widget.padding,
           );
         }
 
@@ -417,7 +425,6 @@ class BoardViewState extends State<BoardView>
             padding: EdgeInsets.fromLTRB(0, 0, 0, widget.bottomPadding ?? 0),
             margin: EdgeInsets.fromLTRB(widget.margin ?? 16, 0,
                 index == widget.lists!.length - 1 ? widget.margin ?? 16 : 0, 0),
-            decoration: widget.decoration,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
