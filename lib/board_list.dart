@@ -198,7 +198,6 @@ class BoardListState extends State<BoardList>
 
     return widget.customWidget ??
         Container(
-          margin: EdgeInsets.all(8),
           padding: widget.padding,
           decoration:
               widget.decoration ?? BoxDecoration(color: backgroundColor),
