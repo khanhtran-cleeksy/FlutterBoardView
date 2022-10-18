@@ -137,7 +137,8 @@ class BoardListState extends State<BoardList>
       listWidgets.add(
         Container(
           color: widget.backgroundColor,
-          child: Expanded(
+          child: Flexible(
+            fit: FlexFit.loose,
             child: LoadMore(
               isFinish: !widget.loadMore,
               onLoadMore: () {
@@ -202,7 +203,7 @@ class BoardListState extends State<BoardList>
           decoration:
               widget.decoration ?? BoxDecoration(color: backgroundColor),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
             children: listWidgets as List<Widget>,
           ),
