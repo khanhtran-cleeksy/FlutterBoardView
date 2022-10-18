@@ -136,8 +136,8 @@ class BoardListState extends State<BoardList>
     if (widget.items != null) {
       listWidgets.add(
         Container(
-          child: Flexible(
-            fit: FlexFit.loose,
+          color: widget.backgroundColor,
+          child: Expanded(
             child: LoadMore(
               isFinish: !widget.loadMore,
               onLoadMore: () {
