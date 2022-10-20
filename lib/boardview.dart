@@ -373,31 +373,36 @@ class BoardViewState extends State<BoardView>
               (currentPos).toString() +
               " " +
               (MediaQuery.of(context).size.width * .25).toString());
-          if (boardViewController.positions.single.pixels >
-              widget.width * .25 + currentPos) {
-            boardViewController
-                .animateTo((currentPage + 1) * widget.width,
-                    duration: new Duration(milliseconds: 200),
-                    curve: Curves.ease)
-                .then((value) {
-              currentPos = boardViewController.positions.single.pixels;
-              currentPage = currentPage + 1;
-            });
-          } else {
-            if (boardViewController.positions.single.pixels <
-                currentPos - widget.width * .25) {
+          if (canDrag) {
+            if (boardViewController.positions.single.pixels >
+                (widget.width) * .25 + currentPos) {
               boardViewController
-                  .animateTo((currentPage - 1) * widget.width,
+                  .animateTo(
+                      (currentPage + 1) * (widget.width + widget.margin!),
                       duration: new Duration(milliseconds: 200),
                       curve: Curves.ease)
                   .then((value) {
                 currentPos = boardViewController.positions.single.pixels;
-                currentPage = currentPage - 1;
+                currentPage = currentPage + 1;
               });
             } else {
-              boardViewController.animateTo((currentPage) * widget.width,
-                  duration: new Duration(milliseconds: 200),
-                  curve: Curves.ease);
+              if (boardViewController.positions.single.pixels <
+                  currentPos - (widget.width) * .25) {
+                boardViewController
+                    .animateTo(
+                        (currentPage - 1) * (widget.width + widget.margin!),
+                        duration: new Duration(milliseconds: 200),
+                        curve: Curves.ease)
+                    .then((value) {
+                  currentPos = boardViewController.positions.single.pixels;
+                  currentPage = currentPage - 1;
+                });
+              } else {
+                boardViewController.animateTo(
+                    (currentPage) * (widget.width + widget.margin!),
+                    duration: new Duration(milliseconds: 200),
+                    curve: Curves.ease);
+              }
             }
           }
         } catch (e) {}
@@ -458,8 +463,19 @@ class BoardViewState extends State<BoardView>
         var temp = Container(
             width: widget.width,
             padding: EdgeInsets.fromLTRB(0, 0, 0, widget.bottomPadding ?? 0),
-            margin: EdgeInsets.fromLTRB(widget.margin ?? 16, 0,
-                index == widget.lists!.length - 1 ? widget.margin ?? 16 : 0, 0),
+            margin: EdgeInsets.fromLTRB(
+                index == 0
+                    ? widget.margin != null
+                        ? widget.margin! * 2
+                        : 32
+                    : widget.margin ?? 16,
+                0,
+                index == widget.lists!.length - 1
+                    ? widget.margin != null
+                        ? widget.margin! * 2
+                        : 32
+                    : 0,
+                0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,

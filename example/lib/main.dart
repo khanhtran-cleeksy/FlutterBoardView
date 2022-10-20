@@ -65,6 +65,8 @@ class _BoardViewExampleState extends State<BoardViewExample> {
       ),
       body: BoardView(
         lists: _lists,
+        margin: 16,
+        width: MediaQuery.of(context).size.width - 64,
         decoration: BoxDecoration(color: Colors.red),
         boardViewController: boardViewController,
       ),
