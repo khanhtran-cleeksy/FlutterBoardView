@@ -368,11 +368,6 @@ class BoardViewState extends State<BoardView>
     if (boardViewController.hasClients) {
       WidgetsBinding.instance!.addPostFrameCallback((Duration duration) {
         try {
-          debugPrint(boardViewController.positions.single.pixels.toString() +
-              "  " +
-              (currentPos).toString() +
-              " " +
-              (MediaQuery.of(context).size.width * .25).toString());
           if (canDrag) {
             if (boardViewController.positions.single.pixels >
                 (widget.width) * .25 + currentPos) {
