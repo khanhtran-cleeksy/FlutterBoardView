@@ -174,9 +174,11 @@ class BoardViewState extends State<BoardView>
     if (boardViewController != null && boardViewController.hasClients) {
       int? tempListIndex = draggedListIndex;
       boardViewController
-          .animateTo(draggedListIndex! * widget.width,
+          .animateTo((currentPage + 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() {
+        // currentPos = boardViewController.positions.single.pixels;
+        // currentPage = currentPage + 1;
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -186,6 +188,19 @@ class BoardViewState extends State<BoardView>
           canDrag = true;
         });
       });
+      // boardViewController
+      //     .animateTo(draggedListIndex! * widget.width,
+      //         duration: new Duration(milliseconds: 400), curve: Curves.ease)
+      //     .whenComplete(() {
+      //   RenderBox object =
+      //       listStates[tempListIndex!].context.findRenderObject() as RenderBox;
+      //   Offset pos = object.localToGlobal(Offset.zero);
+      //   leftListX = pos.dx;
+      //   rightListX = pos.dx + object.size.width;
+      //   Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
+      //     canDrag = true;
+      //   });
+      // });
     }
     if (mounted) {
       setState(() {});
@@ -193,8 +208,6 @@ class BoardViewState extends State<BoardView>
   }
 
   void moveRight() {
-    print("right");
-
     var item = widget.lists![draggedListIndex!].items![draggedItemIndex!];
     var itemState = listStates[draggedListIndex!].itemStates[draggedItemIndex!];
     widget.lists![draggedListIndex!].items!.removeAt(draggedItemIndex!);
@@ -235,9 +248,11 @@ class BoardViewState extends State<BoardView>
       int? tempListIndex = draggedListIndex;
       int? tempItemIndex = draggedItemIndex;
       boardViewController
-          .animateTo(draggedListIndex! * widget.width,
+          .animateTo((currentPage + 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() {
+        // currentPos = boardViewController.positions.single.pixels;
+        // currentPage = currentPage + 1;
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -254,6 +269,26 @@ class BoardViewState extends State<BoardView>
           canDrag = true;
         });
       });
+      // boardViewController
+      //     .animateTo(draggedListIndex! * widget.width,
+      //         duration: new Duration(milliseconds: 400), curve: Curves.ease)
+      //     .whenComplete(() {
+      //   RenderBox object =
+      //       listStates[tempListIndex!].context.findRenderObject() as RenderBox;
+      //   Offset pos = object.localToGlobal(Offset.zero);
+      //   leftListX = pos.dx;
+      //   rightListX = pos.dx + object.size.width;
+      //   RenderBox box = listStates[tempListIndex]
+      //       .itemStates[tempItemIndex!]
+      //       .context
+      //       .findRenderObject() as RenderBox;
+      //   Offset itemPos = box.localToGlobal(Offset.zero);
+      //   topItemY = itemPos.dy;
+      //   bottomItemY = itemPos.dy + box.size.height;
+      //   Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
+      //     canDrag = true;
+      //   });
+      // });
     }
     if (mounted) {
       setState(() {});
@@ -274,10 +309,11 @@ class BoardViewState extends State<BoardView>
     if (boardViewController != null && boardViewController.hasClients) {
       int? tempListIndex = draggedListIndex;
       boardViewController
-          .animateTo(draggedListIndex! * widget.width,
-              duration: new Duration(milliseconds: widget.dragDelay),
-              curve: Curves.ease)
-          .whenComplete(() {
+          .animateTo((currentPage - 1) * (widget.width + widget.margin!),
+              duration: new Duration(milliseconds: 400), curve: Curves.ease)
+          .then((value) {
+        // currentPos = boardViewController.positions.single.pixels;
+        // currentPage = currentPage - 1;
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -287,6 +323,20 @@ class BoardViewState extends State<BoardView>
           canDrag = true;
         });
       });
+      // boardViewController
+      //     .animateTo(draggedListIndex! * widget.width,
+      //         duration: new Duration(milliseconds: widget.dragDelay),
+      //         curve: Curves.ease)
+      //     .whenComplete(() {
+      //   RenderBox object =
+      //       listStates[tempListIndex!].context.findRenderObject() as RenderBox;
+      //   Offset pos = object.localToGlobal(Offset.zero);
+      //   leftListX = pos.dx;
+      //   rightListX = pos.dx + object.size.width;
+      //   Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
+      //     canDrag = true;
+      //   });
+      // });
     }
     if (mounted) {
       setState(() {});
@@ -334,9 +384,11 @@ class BoardViewState extends State<BoardView>
       int? tempListIndex = draggedListIndex;
       int? tempItemIndex = draggedItemIndex;
       boardViewController
-          .animateTo(draggedListIndex! * widget.width,
+          .animateTo((currentPage - 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() {
+        // currentPos = boardViewController.positions.single.pixels;
+        // currentPage = currentPage - 1;
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -353,6 +405,26 @@ class BoardViewState extends State<BoardView>
           canDrag = true;
         });
       });
+      // boardViewController
+      //     .animateTo(draggedListIndex! * widget.width,
+      //         duration: new Duration(milliseconds: 400), curve: Curves.ease)
+      //     .whenComplete(() {
+      //   RenderBox object =
+      //       listStates[tempListIndex!].context.findRenderObject() as RenderBox;
+      //   Offset pos = object.localToGlobal(Offset.zero);
+      //   leftListX = pos.dx;
+      //   rightListX = pos.dx + object.size.width;
+      //   RenderBox box = listStates[tempListIndex]
+      //       .itemStates[tempItemIndex!]
+      //       .context
+      //       .findRenderObject() as RenderBox;
+      //   Offset itemPos = box.localToGlobal(Offset.zero);
+      //   topItemY = itemPos.dy;
+      //   bottomItemY = itemPos.dy + box.size.height;
+      //   Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
+      //     canDrag = true;
+      //   });
+      // });
     }
     if (mounted) {
       setState(() {});
