@@ -193,6 +193,8 @@ class BoardViewState extends State<BoardView>
   }
 
   void moveRight() {
+    print("right");
+
     var item = widget.lists![draggedListIndex!].items![draggedItemIndex!];
     var itemState = listStates[draggedListIndex!].itemStates[draggedItemIndex!];
     widget.lists![draggedListIndex!].items!.removeAt(draggedItemIndex!);
@@ -358,13 +360,46 @@ class BoardViewState extends State<BoardView>
   }
 
   bool shown = true;
+  double currentPos = 0;
+  int currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
     if (boardViewController.hasClients) {
       WidgetsBinding.instance!.addPostFrameCallback((Duration duration) {
         try {
-          boardViewController.position.didUpdateScrollPositionBy(0);
+          debugPrint(boardViewController.positions.single.pixels.toString() +
+              "  " +
+              (currentPos).toString() +
+              " " +
+              (MediaQuery.of(context).size.width * .25).toString());
+          if (boardViewController.positions.single.pixels >
+              widget.width * .25 + currentPos) {
+            boardViewController
+                .animateTo((currentPage + 1) * widget.width,
+                    duration: new Duration(milliseconds: 200),
+                    curve: Curves.ease)
+                .then((value) {
+              currentPos = boardViewController.positions.single.pixels;
+              currentPage = currentPage + 1;
+            });
+          } else {
+            if (boardViewController.positions.single.pixels <
+                currentPos - widget.width * .25) {
+              boardViewController
+                  .animateTo((currentPage - 1) * widget.width,
+                      duration: new Duration(milliseconds: 200),
+                      curve: Curves.ease)
+                  .then((value) {
+                currentPos = boardViewController.positions.single.pixels;
+                currentPage = currentPage - 1;
+              });
+            } else {
+              boardViewController.animateTo((currentPage) * widget.width,
+                  duration: new Duration(milliseconds: 200),
+                  curve: Curves.ease);
+            }
+          }
         } catch (e) {}
         bool _shown = boardViewController.position.maxScrollExtent != 0;
         if (_shown != shown) {
