@@ -640,7 +640,8 @@ class BoardViewState extends State<BoardView>
             //move left
             moveLeft();
           }
-          if (widget.lists!.length > draggedListIndex! + 1 &&
+          if ((widget.lists!.length > draggedListIndex! + 1 &&
+                  widget.lists![draggedListIndex! + 1].customWidget == null) &&
               dx! > rightListX!) {
             //move right
             moveRight();
@@ -792,7 +793,8 @@ class BoardViewState extends State<BoardView>
               }
             }
           }
-          if (widget.lists!.length > draggedListIndex! + 1 &&
+          if ((widget.lists!.length > draggedListIndex! + 1 &&
+                  widget.lists![draggedListIndex! + 1].customWidget == null) &&
               dx! > rightListX!) {
             //move right
             moveListRight();

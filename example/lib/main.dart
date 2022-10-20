@@ -59,6 +59,17 @@ class _BoardViewExampleState extends State<BoardViewExample> {
     for (int i = 0; i < _listData.length; i++) {
       _lists.add(_createBoardList(_listData[i]) as BoardList);
     }
+    _lists.add(BoardList(
+      onDropList: (int? listIndex, int? oldListIndex) {
+        //Update our local list data
+        var list = _listData[oldListIndex!];
+        _listData.removeAt(oldListIndex);
+        _listData.insert(listIndex!, list);
+      },
+      headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
+      backgroundColor: Color.fromARGB(255, 235, 236, 240),
+      customWidget: Container(color: Colors.red, width: 30, height: 50),
+    ));
     return Scaffold(
       appBar: AppBar(
         title: Text("Board View"),
