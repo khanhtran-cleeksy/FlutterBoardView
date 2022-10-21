@@ -98,9 +98,12 @@ class _BoardViewExampleState extends State<BoardViewExample> {
       onTapItem:
           (int? listIndex, int? itemIndex, BoardItemState? state) async {},
       item: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(itemObject.title!),
+        child: Container(
+          height: 100,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(itemObject.title!),
+          ),
         ),
       ),
     );

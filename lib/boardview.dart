@@ -28,7 +28,7 @@ class BoardView extends StatefulWidget {
       this.scrollbar,
       this.scrollbarStyle,
       this.boardViewController,
-      this.dragDelay = 300,
+      this.dragDelay = 600,
       this.onDropItemInMiddleWidget,
       this.isSelecting = false,
       this.lists,
@@ -177,8 +177,8 @@ class BoardViewState extends State<BoardView>
           .animateTo((currentPage + 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() {
-        // currentPos = boardViewController.positions.single.pixels;
-        // currentPage = currentPage + 1;
+        currentPos = boardViewController.positions.single.pixels;
+        currentPage = currentPage + 1;
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -207,7 +207,7 @@ class BoardViewState extends State<BoardView>
     }
   }
 
-  void moveRight() {
+  void moveRight() async {
     var item = widget.lists![draggedListIndex!].items![draggedItemIndex!];
     var itemState = listStates[draggedListIndex!].itemStates[draggedItemIndex!];
     widget.lists![draggedListIndex!].items!.removeAt(draggedItemIndex!);
@@ -250,9 +250,9 @@ class BoardViewState extends State<BoardView>
       boardViewController
           .animateTo((currentPage + 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
-          .whenComplete(() {
-        // currentPos = boardViewController.positions.single.pixels;
-        // currentPage = currentPage + 1;
+          .whenComplete(() async {
+        currentPos = boardViewController.positions.single.pixels;
+        currentPage = currentPage + 1;
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -265,7 +265,7 @@ class BoardViewState extends State<BoardView>
         Offset itemPos = box.localToGlobal(Offset.zero);
         topItemY = itemPos.dy;
         bottomItemY = itemPos.dy + box.size.height;
-        Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
+        await Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
           canDrag = true;
         });
       });
@@ -312,8 +312,8 @@ class BoardViewState extends State<BoardView>
           .animateTo((currentPage - 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .then((value) {
-        // currentPos = boardViewController.positions.single.pixels;
-        // currentPage = currentPage - 1;
+        currentPos = boardViewController.positions.single.pixels;
+        currentPage = currentPage - 1;
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -387,8 +387,8 @@ class BoardViewState extends State<BoardView>
           .animateTo((currentPage - 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() {
-        // currentPos = boardViewController.positions.single.pixels;
-        // currentPage = currentPage - 1;
+        currentPos = boardViewController.positions.single.pixels;
+        currentPage = currentPage - 1;
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -442,11 +442,11 @@ class BoardViewState extends State<BoardView>
         try {
           if (canDrag) {
             if (boardViewController.positions.single.pixels >
-                (widget.width) * .25 + currentPos) {
+                (widget.width) * .1 + currentPos) {
               boardViewController
                   .animateTo(
                       (currentPage + 1) * (widget.width + widget.margin!),
-                      duration: new Duration(milliseconds: 200),
+                      duration: new Duration(milliseconds: 300),
                       curve: Curves.ease)
                   .then((value) {
                 currentPos = boardViewController.positions.single.pixels;
@@ -454,11 +454,11 @@ class BoardViewState extends State<BoardView>
               });
             } else {
               if (boardViewController.positions.single.pixels <
-                  currentPos - (widget.width) * .25) {
+                  currentPos - (widget.width) * .1) {
                 boardViewController
                     .animateTo(
                         (currentPage - 1) * (widget.width + widget.margin!),
-                        duration: new Duration(milliseconds: 200),
+                        duration: new Duration(milliseconds: 300),
                         curve: Curves.ease)
                     .then((value) {
                   currentPos = boardViewController.positions.single.pixels;
@@ -467,7 +467,7 @@ class BoardViewState extends State<BoardView>
               } else {
                 boardViewController.animateTo(
                     (currentPage) * (widget.width + widget.margin!),
-                    duration: new Duration(milliseconds: 200),
+                    duration: new Duration(milliseconds: 300),
                     curve: Curves.ease);
               }
             }
@@ -549,9 +549,33 @@ class BoardViewState extends State<BoardView>
               children: <Widget>[Expanded(child: widget.lists![index])],
             ));
         if (draggedListIndex == index && draggedItemIndex == null) {
-          return Opacity(
-            opacity: 0.0,
-            child: temp,
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+              ),
+            ),
+            width: widget.width,
+            padding: EdgeInsets.fromLTRB(0, 0, 0, widget.bottomPadding ?? 0),
+            margin: EdgeInsets.fromLTRB(
+                index == 0
+                    ? widget.margin != null
+                        ? widget.margin! * 2
+                        : 32
+                    : widget.margin ?? 16,
+                0,
+                index == widget.lists!.length - 1
+                    ? widget.margin != null
+                        ? widget.margin! * 2
+                        : 32
+                    : 0,
+                0),
+            child: Opacity(
+              opacity: 0.0,
+              child: temp,
+            ),
           );
         } else {
           return temp;
@@ -636,13 +660,17 @@ class BoardViewState extends State<BoardView>
               }
             }
           }
-          if (0 <= draggedListIndex! - 1 && dx! < leftListX!) {
+          if (0 <= draggedListIndex! - 1 &&
+              (dx! < leftListX! &&
+                  dx! < MediaQuery.of(context).size.width / 2)) {
             //move left
             moveLeft();
           }
-          if ((widget.lists!.length > draggedListIndex! + 1 &&
-                  widget.lists![draggedListIndex! + 1].customWidget == null) &&
-              dx! > rightListX!) {
+          if (((widget.lists!.length > draggedListIndex! + 1 &&
+                      widget.lists![draggedListIndex! + 1].customWidget ==
+                          null) &&
+                  dx! > rightListX!) &&
+              (dx! > MediaQuery.of(context).size.width / 2)) {
             //move right
             moveRight();
           }
