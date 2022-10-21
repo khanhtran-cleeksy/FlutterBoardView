@@ -161,6 +161,7 @@ class BoardViewState extends State<BoardView>
   }
 
   void moveListRight() {
+    print("moveListRight");
     var list = widget.lists![draggedListIndex!];
     var listState = listStates[draggedListIndex!];
     widget.lists!.removeAt(draggedListIndex!);
@@ -551,7 +552,7 @@ class BoardViewState extends State<BoardView>
         if (draggedListIndex == index && draggedItemIndex == null) {
           return Container(
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: Colors.grey.shade200,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(8),
                 topRight: Radius.circular(8),
@@ -822,12 +823,15 @@ class BoardViewState extends State<BoardView>
             }
           }
           if ((widget.lists!.length > draggedListIndex! + 1 &&
-                  widget.lists![draggedListIndex! + 1].customWidget == null) &&
+                  (widget.lists![draggedListIndex! + 1].customWidget == null &&
+                      widget.lists![draggedListIndex! + 1].draggable)) &&
               dx! > rightListX!) {
             //move right
             moveListRight();
           }
-          if (0 <= draggedListIndex! - 1 && dx! < leftListX!) {
+          if (0 <= draggedListIndex! - 1 &&
+              (dx! < leftListX! &&
+                  dx! < MediaQuery.of(context).size.width / 2)) {
             //move left
             moveListLeft();
           }

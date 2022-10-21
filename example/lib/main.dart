@@ -118,6 +118,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
     return BoardList(
       onStartDragList: (int? listIndex) {},
       onTapList: (int? listIndex) async {},
+      draggable: (items.length != 30),
       onDropList: (int? listIndex, int? oldListIndex) {
         //Update our local list data
         var list = _listData[oldListIndex!];
