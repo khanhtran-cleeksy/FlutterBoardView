@@ -297,6 +297,7 @@ class BoardViewState extends State<BoardView>
   }
 
   void moveListLeft() {
+    print("moveListLeft");
     var list = widget.lists![draggedListIndex!];
     var listState = listStates[draggedListIndex!];
     widget.lists!.removeAt(draggedListIndex!);
@@ -443,7 +444,7 @@ class BoardViewState extends State<BoardView>
         try {
           if (canDrag) {
             if (boardViewController.positions.single.pixels >
-                (widget.width) * .1 + currentPos) {
+                (widget.width) * .01 + currentPos) {
               boardViewController
                   .animateTo(
                       (currentPage + 1) * (widget.width + widget.margin!),
@@ -455,7 +456,7 @@ class BoardViewState extends State<BoardView>
               });
             } else {
               if (boardViewController.positions.single.pixels <
-                  currentPos - (widget.width) * .1) {
+                  currentPos - (widget.width) * .01) {
                 boardViewController
                     .animateTo(
                         (currentPage - 1) * (widget.width + widget.margin!),
@@ -829,9 +830,8 @@ class BoardViewState extends State<BoardView>
             //move right
             moveListRight();
           }
-          if (0 <= draggedListIndex! - 1 &&
-              (dx! < leftListX! &&
-                  dx! < MediaQuery.of(context).size.width / 2)) {
+
+          if (0 <= draggedListIndex! - 1 && (dx! < 32)) {
             //move left
             moveListLeft();
           }
