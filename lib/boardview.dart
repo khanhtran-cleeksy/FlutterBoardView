@@ -161,7 +161,6 @@ class BoardViewState extends State<BoardView>
   }
 
   void moveListRight() {
-    print("moveListRight");
     var list = widget.lists![draggedListIndex!];
     var listState = listStates[draggedListIndex!];
     widget.lists!.removeAt(draggedListIndex!);
@@ -297,7 +296,6 @@ class BoardViewState extends State<BoardView>
   }
 
   void moveListLeft() {
-    print("moveListLeft");
     var list = widget.lists![draggedListIndex!];
     var listState = listStates[draggedListIndex!];
     widget.lists!.removeAt(draggedListIndex!);
