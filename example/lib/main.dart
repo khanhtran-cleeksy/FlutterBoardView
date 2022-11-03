@@ -51,6 +51,8 @@ class _BoardViewExampleState extends State<BoardViewExample> {
     )
   ];
 
+  bool _movable = true;
+
   BoardViewController boardViewController = new BoardViewController();
 
   @override
@@ -66,6 +68,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
         _listData.removeAt(oldListIndex);
         _listData.insert(listIndex!, list);
       },
+      movable: _movable,
       headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
       backgroundColor: Color.fromARGB(255, 235, 236, 240),
       customWidget: Container(color: Colors.red, width: 30, height: 50),
@@ -86,8 +89,11 @@ class _BoardViewExampleState extends State<BoardViewExample> {
 
   Widget buildBoardItem(BoardItemObject itemObject) {
     return BoardItem(
-      onStartDragItem:
-          (int? listIndex, int? itemIndex, BoardItemState? state) {},
+      onStartDragItem: (int? listIndex, int? itemIndex, BoardItemState? state) {
+        setState(() {
+          _movable = true;
+        });
+      },
       onDropItem: (int? listIndex, int? itemIndex, int? oldListIndex,
           int? oldItemIndex, BoardItemState? state) {
         //Used to update our local item data
@@ -117,6 +123,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
 
     return BoardList(
       onStartDragList: (int? listIndex) {},
+      movable: _movable,
       // customWidget: list.items!.length == 20
       //     ? Container(
       //         color: Colors.black,
