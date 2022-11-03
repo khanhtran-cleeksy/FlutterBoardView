@@ -253,18 +253,21 @@ class BoardViewState extends State<BoardView>
           .whenComplete(() async {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage + 1;
-        RenderBox object =
-            listStates[tempListIndex!].context.findRenderObject() as RenderBox;
-        Offset pos = object.localToGlobal(Offset.zero);
-        leftListX = pos.dx;
-        rightListX = pos.dx + object.size.width;
-        RenderBox box = listStates[tempListIndex]
-            .itemStates[tempItemIndex!]
-            .context
-            .findRenderObject() as RenderBox;
-        Offset itemPos = box.localToGlobal(Offset.zero);
-        topItemY = itemPos.dy;
-        bottomItemY = itemPos.dy + box.size.height;
+        if (widget.lists?[draggedListIndex!].movable == true) {
+          RenderBox object = listStates[tempListIndex!]
+              .context
+              .findRenderObject() as RenderBox;
+          Offset pos = object.localToGlobal(Offset.zero);
+          leftListX = pos.dx;
+          rightListX = pos.dx + object.size.width;
+          RenderBox box = listStates[tempListIndex]
+              .itemStates[tempItemIndex!]
+              .context
+              .findRenderObject() as RenderBox;
+          Offset itemPos = box.localToGlobal(Offset.zero);
+          topItemY = itemPos.dy;
+          bottomItemY = itemPos.dy + box.size.height;
+        }
         await Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
           canDrag = true;
         });
@@ -389,18 +392,21 @@ class BoardViewState extends State<BoardView>
           .whenComplete(() {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage - 1;
-        RenderBox object =
-            listStates[tempListIndex!].context.findRenderObject() as RenderBox;
-        Offset pos = object.localToGlobal(Offset.zero);
-        leftListX = pos.dx;
-        rightListX = pos.dx + object.size.width;
-        RenderBox box = listStates[tempListIndex]
-            .itemStates[tempItemIndex!]
-            .context
-            .findRenderObject() as RenderBox;
-        Offset itemPos = box.localToGlobal(Offset.zero);
-        topItemY = itemPos.dy;
-        bottomItemY = itemPos.dy + box.size.height;
+        if (widget.lists?[draggedListIndex!].movable == true) {
+          RenderBox object = listStates[tempListIndex!]
+              .context
+              .findRenderObject() as RenderBox;
+          Offset pos = object.localToGlobal(Offset.zero);
+          leftListX = pos.dx;
+          rightListX = pos.dx + object.size.width;
+          RenderBox box = listStates[tempListIndex]
+              .itemStates[tempItemIndex!]
+              .context
+              .findRenderObject() as RenderBox;
+          Offset itemPos = box.localToGlobal(Offset.zero);
+          topItemY = itemPos.dy;
+          bottomItemY = itemPos.dy + box.size.height;
+        }
         Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
           canDrag = true;
         });
@@ -500,6 +506,7 @@ class BoardViewState extends State<BoardView>
             draggable: widget.lists![index].draggable,
             onDropList: widget.lists![index].onDropList,
             onTapList: widget.lists![index].onTapList,
+            immovableWidget: widget.lists![index].immovableWidget,
             onStartDragList: widget.lists![index].onStartDragList,
             onLoadMore: widget.lists![index].onLoadMore,
             customWidget: widget.lists![index].customWidget,
@@ -516,6 +523,7 @@ class BoardViewState extends State<BoardView>
             footer: widget.lists![index].footer,
             header: widget.lists![index].header,
             movable: widget.lists![index].movable,
+            immovableWidget: widget.lists![index].immovableWidget,
             boardView: this,
             draggable: widget.lists![index].draggable,
             index: index,

@@ -16,12 +16,13 @@ class BoardList extends StatefulWidget {
   final Widget? footer;
   final List<BoardItem>? items;
   final bool loadMore;
-  final bool? movable;
+  final bool movable;
   final Color? backgroundColor;
   final Color? headerBackgroundColor;
   final BoardViewState? boardView;
   final OnDropList? onDropList;
   final OnTapList? onTapList;
+  final Widget? immovableWidget;
   final OnStartDragList? onStartDragList;
   final FutureCallBack? onLoadMore;
   final Decoration? decoration;
@@ -33,7 +34,7 @@ class BoardList extends StatefulWidget {
     this.header,
     this.items,
     this.loadMore = false,
-    this.movable,
+    this.movable = true,
     this.footer,
     this.backgroundColor,
     this.headerBackgroundColor,
@@ -46,6 +47,7 @@ class BoardList extends StatefulWidget {
     this.onStartDragList,
     this.onLoadMore,
     this.customWidget,
+    this.immovableWidget,
     this.decoration,
   }) : super(key: key);
 
@@ -139,49 +141,50 @@ class BoardListState extends State<BoardList>
       listWidgets.add(
         Container(
           child: Expanded(
-              child: widget.movable!
-                  ? LoadMore(
-                      isFinish: !widget.loadMore,
-                      onLoadMore: () {
-                        return widget.onLoadMore!(widget.index!);
+            child: widget.movable
+                ? LoadMore(
+                    isFinish: !widget.loadMore,
+                    onLoadMore: () {
+                      return widget.onLoadMore!(widget.index!);
+                    },
+                    child: new ListView.builder(
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      controller: boardListController,
+                      itemCount: widget.items!.length,
+                      itemBuilder: (ctx, index) {
+                        if (widget.items![index].boardList == null ||
+                            widget.items![index].index != index ||
+                            widget.items![index].boardList!.widget.index !=
+                                widget.index ||
+                            widget.items![index].boardList != this) {
+                          widget.items![index] = new BoardItem(
+                            boardList: this,
+                            item: widget.items![index].item,
+                            draggable: widget.items![index].draggable,
+                            index: index,
+                            onDropItem: widget.items![index].onDropItem,
+                            onTapItem: widget.items![index].onTapItem,
+                            onDragItem: widget.items![index].onDragItem,
+                            onStartDragItem:
+                                widget.items![index].onStartDragItem,
+                          );
+                        }
+                        if (widget.boardView!.draggedItemIndex == index &&
+                            widget.boardView!.draggedListIndex ==
+                                widget.index) {
+                          return Opacity(
+                            opacity: 0.0,
+                            child: widget.items![index],
+                          );
+                        } else {
+                          return widget.items![index];
+                        }
                       },
-                      child: new ListView.builder(
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        controller: boardListController,
-                        itemCount: widget.items!.length,
-                        itemBuilder: (ctx, index) {
-                          if (widget.items![index].boardList == null ||
-                              widget.items![index].index != index ||
-                              widget.items![index].boardList!.widget.index !=
-                                  widget.index ||
-                              widget.items![index].boardList != this) {
-                            widget.items![index] = new BoardItem(
-                              boardList: this,
-                              item: widget.items![index].item,
-                              draggable: widget.items![index].draggable,
-                              index: index,
-                              onDropItem: widget.items![index].onDropItem,
-                              onTapItem: widget.items![index].onTapItem,
-                              onDragItem: widget.items![index].onDragItem,
-                              onStartDragItem:
-                                  widget.items![index].onStartDragItem,
-                            );
-                          }
-                          if (widget.boardView!.draggedItemIndex == index &&
-                              widget.boardView!.draggedListIndex ==
-                                  widget.index) {
-                            return Opacity(
-                              opacity: 0.0,
-                              child: widget.items![index],
-                            );
-                          } else {
-                            return widget.items![index];
-                          }
-                        },
-                      ),
-                    )
-                  : Center(child: Text("ko the move toi1"))),
+                    ),
+                  )
+                : widget.immovableWidget ?? SizedBox(),
+          ),
         ),
       );
     }

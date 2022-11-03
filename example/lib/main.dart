@@ -51,7 +51,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
     )
   ];
 
-  bool _movable = true;
+  bool _movable = false;
 
   BoardViewController boardViewController = new BoardViewController();
 
@@ -59,7 +59,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
   Widget build(BuildContext context) {
     List<BoardList> _lists = [];
     for (int i = 0; i < _listData.length; i++) {
-      _lists.add(_createBoardList(_listData[i]) as BoardList);
+      _lists.add(_createBoardList(_listData[i], i) as BoardList);
     }
     _lists.add(BoardList(
       onDropList: (int? listIndex, int? oldListIndex) {
@@ -68,7 +68,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
         _listData.removeAt(oldListIndex);
         _listData.insert(listIndex!, list);
       },
-      movable: _movable,
+      movable: false,
       headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
       backgroundColor: Color.fromARGB(255, 235, 236, 240),
       customWidget: Container(color: Colors.red, width: 30, height: 50),
@@ -96,6 +96,9 @@ class _BoardViewExampleState extends State<BoardViewExample> {
       },
       onDropItem: (int? listIndex, int? itemIndex, int? oldListIndex,
           int? oldItemIndex, BoardItemState? state) {
+        setState(() {
+          _movable = false;
+        });
         //Used to update our local item data
         var item = _listData[oldListIndex!].items![oldItemIndex!];
         _listData[oldListIndex].items!.removeAt(oldItemIndex);
@@ -115,7 +118,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
     );
   }
 
-  Widget _createBoardList(BoardListObject list) {
+  Widget _createBoardList(BoardListObject list, int i) {
     List<BoardItem> items = [];
     for (int i = 0; i < list.items!.length; i++) {
       items.insert(i, buildBoardItem(list.items![i]) as BoardItem);
@@ -123,7 +126,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
 
     return BoardList(
       onStartDragList: (int? listIndex) {},
-      movable: _movable,
+      movable: !(_movable && i == 1),
       // customWidget: list.items!.length == 20
       //     ? Container(
       //         color: Colors.black,
