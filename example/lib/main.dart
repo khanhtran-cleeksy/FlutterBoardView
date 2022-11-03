@@ -117,6 +117,12 @@ class _BoardViewExampleState extends State<BoardViewExample> {
 
     return BoardList(
       onStartDragList: (int? listIndex) {},
+      // customWidget: list.items!.length == 20
+      //     ? Container(
+      //         color: Colors.black,
+      //         height: 1000,
+      //       )
+      //     : null,
       onTapList: (int? listIndex) async {},
       draggable: (items.length != 30),
       onDropList: (int? listIndex, int? oldListIndex) {

@@ -666,11 +666,9 @@ class BoardViewState extends State<BoardView>
             //move left
             moveLeft();
           }
-          if (((widget.lists!.length > draggedListIndex! + 1
-                  // &&
-                  //         widget.lists![draggedListIndex! + 1].customWidget ==
-                  //             null
-                  ) &&
+          if (((widget.lists!.length > draggedListIndex! + 1 &&
+                      widget.lists![draggedListIndex! + 1].customWidget ==
+                          null) &&
                   dx! > rightListX!) &&
               (dx! > MediaQuery.of(context).size.width / 2)) {
             //move right
@@ -824,8 +822,7 @@ class BoardViewState extends State<BoardView>
             }
           }
           if ((widget.lists!.length > draggedListIndex! + 1 &&
-                  (
-                      // widget.lists![draggedListIndex! + 1].customWidget == null &&
+                  (widget.lists![draggedListIndex! + 1].customWidget == null &&
                       widget.lists![draggedListIndex! + 1].draggable)) &&
               dx! > rightListX!) {
             //move right
