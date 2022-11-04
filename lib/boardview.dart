@@ -393,7 +393,8 @@ class BoardViewState extends State<BoardView>
           .whenComplete(() {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage - 1;
-        if (draggedListIndex != null &&widget.lists?[draggedListIndex!].movable == true) {
+        if (draggedListIndex != null &&
+            widget.lists?[draggedListIndex!].movable == true) {
           RenderBox object = listStates[tempListIndex!]
               .context
               .findRenderObject() as RenderBox;
