@@ -4,7 +4,10 @@ import 'package:boardview/boardview.dart';
 import 'package:boardview/boardview_controller.dart';
 import 'package:example/BoardItemObject.dart';
 import 'package:example/BoardListObject.dart';
+import 'package:example/config_refresher.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,8 +18,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: BoardViewExample(),
+    return RefreshConfiguration(
+      headerBuilder: () => RefreshHeaderIndicator(),
+      footerBuilder: () => RefreshHeaderIndicator(),
+      child: MaterialApp(
+        home: BoardViewExample(),
+      ),
     );
   }
 }
@@ -54,6 +61,8 @@ class _BoardViewExampleState extends State<BoardViewExample> {
   bool _movable = false;
 
   BoardViewController boardViewController = new BoardViewController();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -77,12 +86,23 @@ class _BoardViewExampleState extends State<BoardViewExample> {
       appBar: AppBar(
         title: Text("Board View"),
       ),
-      body: BoardView(
-        lists: _lists,
-        margin: 16,
-        width: MediaQuery.of(context).size.width - 64,
-        decoration: BoxDecoration(color: Colors.red),
-        boardViewController: boardViewController,
+      body: SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        physics: ClampingScrollPhysics(),
+
+        // physics: ClampingScrollPhysics(),
+        onRefresh: () async {
+          await Future.delayed(Duration(milliseconds: 2000));
+          _refreshController.refreshCompleted();
+        },
+        child: BoardView(
+          lists: _lists,
+          margin: 16,
+          width: MediaQuery.of(context).size.width - 64,
+          decoration: BoxDecoration(color: Colors.red),
+          boardViewController: boardViewController,
+        ),
       ),
     );
   }

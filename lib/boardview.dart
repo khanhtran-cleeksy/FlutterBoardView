@@ -944,7 +944,7 @@ class BoardViewState extends State<BoardView>
                 setState(() {});
               }
             },
-            child: new Stack(
+            child: Stack(
               children: stackWidgets,
             )));
   }

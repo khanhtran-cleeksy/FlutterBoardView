@@ -147,7 +147,7 @@ class BoardListState extends State<BoardList>
                     onLoadMore: () {
                       return widget.onLoadMore!(widget.index!);
                     },
-                    child: new ListView.builder(
+                    child: ListView.builder(
                       shrinkWrap: true,
                       physics: ClampingScrollPhysics(),
                       controller: boardListController,
@@ -158,7 +158,7 @@ class BoardListState extends State<BoardList>
                             widget.items![index].boardList!.widget.index !=
                                 widget.index ||
                             widget.items![index].boardList != this) {
-                          widget.items![index] = new BoardItem(
+                          widget.items![index] = BoardItem(
                             boardList: this,
                             item: widget.items![index].item,
                             draggable: widget.items![index].draggable,
@@ -211,7 +211,91 @@ class BoardListState extends State<BoardList>
           child: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
-            children: listWidgets as List<Widget>,
+            // children: listWidgets as List<Widget>,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  if (widget.onTapList != null) {
+                    widget.onTapList!(widget.index);
+                  }
+                },
+                onTapDown: (otd) {
+                  if (widget.draggable) {
+                    RenderBox object = context.findRenderObject() as RenderBox;
+                    Offset pos = object.localToGlobal(Offset.zero);
+                    widget.boardView!.initialX = pos.dx;
+                    widget.boardView!.initialY = pos.dy;
+
+                    widget.boardView!.rightListX = pos.dx + object.size.width;
+                    widget.boardView!.leftListX = pos.dx;
+                  }
+                },
+                onTapCancel: () {},
+                onLongPress: () {
+                  if (!widget.boardView!.widget.isSelecting &&
+                      widget.draggable) {
+                    _startDrag(widget, context);
+                  }
+                },
+                child: Container(
+                  color: widget.headerBackgroundColor,
+                  child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: widget.header!),
+                ),
+              ),
+              if (widget.items != null)
+                Container(
+                  child: Expanded(
+                    child: widget.movable
+                        ? LoadMore(
+                            isFinish: !widget.loadMore,
+                            onLoadMore: () {
+                              return widget.onLoadMore!(widget.index!);
+                            },
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              controller: boardListController,
+                              itemCount: widget.items!.length,
+                              itemBuilder: (ctx, index) {
+                                if (widget.items![index].boardList == null ||
+                                    widget.items![index].index != index ||
+                                    widget.items![index].boardList!.widget
+                                            .index !=
+                                        widget.index ||
+                                    widget.items![index].boardList != this) {
+                                  widget.items![index] = BoardItem(
+                                    boardList: this,
+                                    item: widget.items![index].item,
+                                    draggable: widget.items![index].draggable,
+                                    index: index,
+                                    onDropItem: widget.items![index].onDropItem,
+                                    onTapItem: widget.items![index].onTapItem,
+                                    onDragItem: widget.items![index].onDragItem,
+                                    onStartDragItem:
+                                        widget.items![index].onStartDragItem,
+                                  );
+                                }
+                                if (widget.boardView!.draggedItemIndex ==
+                                        index &&
+                                    widget.boardView!.draggedListIndex ==
+                                        widget.index) {
+                                  return Opacity(
+                                    opacity: 0.0,
+                                    child: widget.items![index],
+                                  );
+                                } else {
+                                  return widget.items![index];
+                                }
+                              },
+                            ),
+                          )
+                        : widget.immovableWidget ?? SizedBox(),
+                  ),
+                ),
+            ],
           ),
         );
   }
