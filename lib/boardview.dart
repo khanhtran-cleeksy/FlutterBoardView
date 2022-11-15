@@ -452,7 +452,7 @@ class BoardViewState extends State<BoardView>
     if (boardViewController.hasClients) {
       WidgetsBinding.instance!.addPostFrameCallback((Duration duration) {
         try {
-          if (_cardKey.currentContext != null) {
+          if (cardSize == null && _cardKey.currentContext != null) {
             RenderBox? _cardBox =
                 _cardKey.currentContext?.findRenderObject() as RenderBox? ??
                     null;
@@ -502,7 +502,7 @@ class BoardViewState extends State<BoardView>
     }
     Widget listWidget = ListView.builder(
       physics: ClampingScrollPhysics(),
-      // itemCount: widget.lists!.length,
+      itemCount: widget.lists!.length,
       scrollDirection: Axis.horizontal,
       addAutomaticKeepAlives: true,
       controller: boardViewController,
