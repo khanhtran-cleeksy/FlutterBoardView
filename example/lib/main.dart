@@ -33,11 +33,12 @@ class BoardViewExample extends StatefulWidget {
   _BoardViewExampleState createState() => _BoardViewExampleState();
 }
 
-class _BoardViewExampleState extends State<BoardViewExample> {
+class _BoardViewExampleState extends State<BoardViewExample>
+    with AutomaticKeepAliveClientMixin<BoardViewExample> {
   List<BoardListObject> _listData = [
     BoardListObject(
       title: "List title 1",
-      items: List.generate(10, (index) {
+      items: List.generate(1000, (index) {
         return BoardItemObject(title: "Item ${index + 1}");
       }),
       itemCount: 100,
@@ -65,7 +66,9 @@ class _BoardViewExampleState extends State<BoardViewExample> {
       RefreshController(initialRefresh: false);
 
   @override
+  @mustCallSuper
   Widget build(BuildContext context) {
+    super.build(context);
     List<BoardList> _lists = [];
     for (int i = 0; i < _listData.length; i++) {
       _lists.add(_createBoardList(_listData[i], i) as BoardList);
@@ -195,4 +198,7 @@ class _BoardViewExampleState extends State<BoardViewExample> {
     });
     return true;
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

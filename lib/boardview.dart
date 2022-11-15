@@ -52,7 +52,7 @@ typedef void OnDropItem(int? listIndex, int? itemIndex);
 typedef void OnDropList(int? listIndex);
 
 class BoardViewState extends State<BoardView>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin<BoardView> {
   Widget? draggedItem;
   int? draggedItemIndex;
   int? draggedListIndex;
@@ -443,11 +443,22 @@ class BoardViewState extends State<BoardView>
   double currentPos = 0;
   int currentPage = 0;
 
+  final GlobalKey _cardKey = GlobalKey();
+  Size? cardSize;
+
   @override
+  @mustCallSuper
   Widget build(BuildContext context) {
     if (boardViewController.hasClients) {
       WidgetsBinding.instance!.addPostFrameCallback((Duration duration) {
         try {
+          if (_cardKey.currentContext != null) {
+            RenderBox? _cardBox =
+                _cardKey.currentContext?.findRenderObject() as RenderBox? ??
+                    null;
+            cardSize = _cardBox?.size ?? null;
+            setState(() {});
+          }
           if (canDrag) {
             if (boardViewController.positions.single.pixels >
                 (widget.width) * .01 + currentPos) {
@@ -491,8 +502,9 @@ class BoardViewState extends State<BoardView>
     }
     Widget listWidget = ListView.builder(
       physics: ClampingScrollPhysics(),
-      itemCount: widget.lists!.length,
+      // itemCount: widget.lists!.length,
       scrollDirection: Axis.horizontal,
+      addAutomaticKeepAlives: true,
       controller: boardViewController,
       itemBuilder: (BuildContext context, int index) {
         if (widget.lists![index].boardView == null) {
@@ -866,6 +878,8 @@ class BoardViewState extends State<BoardView>
     }
 
     return Container(
+        height: cardSize?.height ?? null,
+        key: _cardKey,
         child: Listener(
             onPointerMove: (opm) {
               if (draggedItem != null) {
