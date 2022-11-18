@@ -4,7 +4,6 @@ import 'package:boardview/boardview_controller.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 import 'package:boardview/board_list.dart';
-import 'package:vs_scrollbar/vs_scrollbar.dart';
 
 class BoardView extends StatefulWidget {
   final List<BoardList>? lists;
@@ -179,6 +178,7 @@ class BoardViewState extends State<BoardView>
           .whenComplete(() {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage + 1;
+        setState(() {});
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -253,6 +253,7 @@ class BoardViewState extends State<BoardView>
           .whenComplete(() async {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage + 1;
+        setState(() {});
         if (draggedListIndex != null &&
             widget.lists?[draggedListIndex!].movable == true) {
           RenderBox object = listStates[tempListIndex!]
@@ -318,6 +319,7 @@ class BoardViewState extends State<BoardView>
           .then((value) {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage - 1;
+        setState(() {});
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
@@ -393,6 +395,7 @@ class BoardViewState extends State<BoardView>
           .whenComplete(() {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage - 1;
+        setState(() {});
         if (draggedListIndex != null &&
             widget.lists?[draggedListIndex!].movable == true) {
           RenderBox object = listStates[tempListIndex!]
@@ -470,6 +473,7 @@ class BoardViewState extends State<BoardView>
                   .then((value) {
                 currentPos = boardViewController.positions.single.pixels;
                 currentPage = currentPage + 1;
+                setState(() {});
               });
             } else {
               if (boardViewController.positions.single.pixels <
@@ -482,6 +486,7 @@ class BoardViewState extends State<BoardView>
                     .then((value) {
                   currentPos = boardViewController.positions.single.pixels;
                   currentPage = currentPage - 1;
+                  setState(() {});
                 });
               } else {
                 boardViewController.animateTo(
@@ -606,24 +611,14 @@ class BoardViewState extends State<BoardView>
         }
       },
     );
-    if (widget.scrollbar == true) {
-      listWidget = VsScrollbar(
-          controller: boardViewController,
-          showTrackOnHover: true, // default false
-          isAlwaysShown: shown && widget.lists!.length > 1, // default false
-          scrollbarFadeDuration: Duration(
-              milliseconds: 500), // default : Duration(milliseconds: 300)
-          scrollbarTimeToFade: Duration(
-              milliseconds: 800), // default : Duration(milliseconds: 600)
-          style: widget.scrollbarStyle != null
-              ? VsScrollbarStyle(
-                  hoverThickness: widget.scrollbarStyle!.hoverThickness,
-                  radius: widget.scrollbarStyle!.radius,
-                  thickness: widget.scrollbarStyle!.thickness,
-                  color: widget.scrollbarStyle!.color)
-              : VsScrollbarStyle(),
-          child: listWidget);
-    }
+    // if (widget.scrollbar != true) {
+    //   listWidget = Column(
+    //     children: [
+    //       listWidget,
+    //
+    //     ],
+    //   );
+    // }
     List<Widget> stackWidgets = <Widget>[listWidget];
     bool isInBottomWidget = false;
     if (dy != null) {
@@ -958,8 +953,38 @@ class BoardViewState extends State<BoardView>
                 setState(() {});
               }
             },
-            child: Stack(
-              children: stackWidgets,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: stackWidgets,
+                  ),
+                ),
+                if (widget.scrollbar == true)
+                  SizedBox(
+                    height: 30,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ...List.generate(
+                          widget.lists!.length - 1,
+                          (index) => AnimatedContainer(
+                            duration: Duration(milliseconds: 150),
+                            margin: EdgeInsets.only(right: 7),
+                            decoration: BoxDecoration(
+                              color: currentPage == index
+                                  ? Color(0xFF666E83)
+                                  : Color(0xFFD7DBE4),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            height: currentPage == index ? 8 : 6,
+                            width: currentPage == index ? 8 : 6,
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+              ],
             )));
   }
 

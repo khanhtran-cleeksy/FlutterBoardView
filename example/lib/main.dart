@@ -41,14 +41,14 @@ class _BoardViewExampleState extends State<BoardViewExample>
       items: List.generate(1000, (index) {
         return BoardItemObject(title: "Item ${index + 1}");
       }),
-      itemCount: 100,
+      itemCount: 1000,
     ),
     BoardListObject(
       title: "List title 2",
-      items: List.generate(20, (index) {
+      items: List.generate(2000, (index) {
         return BoardItemObject(title: "Item ${index + 1}");
       }),
-      itemCount: 150,
+      itemCount: 2000,
     ),
     BoardListObject(
       title: "List title 3",

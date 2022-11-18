@@ -107,6 +107,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  smooth_page_indicator:
+    dependency: transitive
+    description:
+      name: smooth_page_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0+2"
   source_span:
     dependency: transitive
     description:
@@ -156,13 +163,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
-  vs_scrollbar:
-    dependency: transitive
-    description:
-      name: vs_scrollbar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.1"
 sdks:
   dart: ">=2.17.0-0 <3.0.0"
   flutter: ">=2.0.0"
