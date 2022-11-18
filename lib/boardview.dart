@@ -311,14 +311,16 @@ class BoardViewState extends State<BoardView>
     widget.lists!.insert(draggedListIndex!, list);
     listStates.insert(draggedListIndex!, listState);
     canDrag = false;
-    if (boardViewController != null && boardViewController.hasClients) {
+    if (boardViewController != null &&
+        boardViewController.hasClients &&
+        currentPage > 0) {
       int? tempListIndex = draggedListIndex;
       boardViewController
           .animateTo((currentPage - 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .then((value) {
         currentPos = boardViewController.positions.single.pixels;
-        currentPage = currentPage - 1;
+        currentPage = currentPage > 0 ? currentPage - 1 : currentPage;
         setState(() {});
         RenderBox object =
             listStates[tempListIndex!].context.findRenderObject() as RenderBox;
@@ -386,7 +388,9 @@ class BoardViewState extends State<BoardView>
     if (listStates[draggedListIndex!].mounted) {
       listStates[draggedListIndex!].setState(() {});
     }
-    if (boardViewController != null && boardViewController.hasClients) {
+    if (boardViewController != null &&
+        boardViewController.hasClients &&
+        currentPage > 0) {
       int? tempListIndex = draggedListIndex;
       int? tempItemIndex = draggedItemIndex;
       boardViewController
@@ -394,7 +398,7 @@ class BoardViewState extends State<BoardView>
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() {
         currentPos = boardViewController.positions.single.pixels;
-        currentPage = currentPage - 1;
+        currentPage = currentPage > 0 ? currentPage - 1 : currentPage;
         setState(() {});
         if (draggedListIndex != null &&
             widget.lists?[draggedListIndex!].movable == true) {
@@ -485,14 +489,17 @@ class BoardViewState extends State<BoardView>
                         curve: Curves.ease)
                     .then((value) {
                   currentPos = boardViewController.positions.single.pixels;
-                  currentPage = currentPage - 1;
+                  currentPage = currentPage > 0 ? currentPage - 1 : currentPage;
                   setState(() {});
                 });
               } else {
-                boardViewController.animateTo(
-                    (currentPage) * (widget.width + widget.margin!),
-                    duration: new Duration(milliseconds: 300),
-                    curve: Curves.ease);
+                boardViewController
+                    .animateTo((currentPage) * (widget.width + widget.margin!),
+                        duration: new Duration(milliseconds: 300),
+                        curve: Curves.ease)
+                    .then((value) {
+                  currentPos = boardViewController.positions.single.pixels;
+                });
               }
             }
           }
