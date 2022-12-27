@@ -974,7 +974,10 @@ class BoardViewState extends State<BoardView>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ...List.generate(
-                          widget.lists!.length - 1,
+                          widget.lists!
+                              .map((e) => e.customWidget == null)
+                              .toList()
+                              .length,
                           (index) => AnimatedContainer(
                             duration: Duration(milliseconds: 150),
                             margin: EdgeInsets.only(right: 7),
