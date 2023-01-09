@@ -871,9 +871,9 @@ class BoardViewState extends State<BoardView>
         }
       });
       stackWidgets.add(Positioned(
-        width: widget.width,
+        width: widget.width - (widget.margin ?? 0 * 2),
         height: height,
-        child: Opacity(opacity: .7, child: draggedItem),
+        child: draggedItem!,
         left: (dx! - offsetX!) + initialX!,
         top: (dy! - offsetY!) + initialY!,
       ));
