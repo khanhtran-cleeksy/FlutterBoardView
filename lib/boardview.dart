@@ -251,8 +251,7 @@ class BoardViewState extends State<BoardView>
           .animateTo((currentPage + 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() async {
-        if (boardViewController.positions.isNotEmpty)
-          currentPos = boardViewController.positions.single.pixels;
+        currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage + 1;
         setState(() {});
         if (draggedListIndex != null &&
@@ -804,6 +803,8 @@ class BoardViewState extends State<BoardView>
             }
           }
           if (widget.lists![draggedListIndex!].items!.length >
+                  draggedItemIndex! + 1 &&
+              listStates[draggedListIndex!].itemStates.length >
                   draggedItemIndex! + 1 &&
               dy! >
                   bottomItemY! +
