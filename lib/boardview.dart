@@ -251,7 +251,11 @@ class BoardViewState extends State<BoardView>
           .animateTo((currentPage + 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() async {
-        currentPos = boardViewController.positions.single.pixels;
+        try {
+          currentPos = boardViewController.positions.single.pixels;
+        } catch (e) {
+          currentPos = widget.width;
+        }
         currentPage = currentPage + 1;
         setState(() {});
         if (draggedListIndex != null &&
@@ -802,19 +806,17 @@ class BoardViewState extends State<BoardView>
               });
             }
           }
-          try {
-            if (widget.lists![draggedListIndex!].items!.length >
-                    draggedItemIndex! + 1 &&
-                dy! >
-                    bottomItemY! +
-                        listStates[draggedListIndex!]
-                                .itemStates[draggedItemIndex! + 1]
-                                .height /
-                            2) {
-              //move down
-              moveDown();
-            }
-          } catch (_) {}
+          if (widget.lists![draggedListIndex!].items!.length >
+                  draggedItemIndex! + 1 &&
+              dy! >
+                  bottomItemY! +
+                      listStates[draggedListIndex!]
+                              .itemStates[draggedItemIndex! + 1]
+                              .height /
+                          2) {
+            //move down
+            moveDown();
+          }
         } else {
           //dragging list
           if (0 <= draggedListIndex! - 1 && dx! < leftListX! + 45) {
