@@ -802,17 +802,19 @@ class BoardViewState extends State<BoardView>
               });
             }
           }
-          if (widget.lists![draggedListIndex!].items!.length >
-                  draggedItemIndex! + 1 &&
-              dy! >
-                  bottomItemY! +
-                      listStates[draggedListIndex!]
-                              .itemStates[draggedItemIndex! + 1]
-                              .height /
-                          2) {
-            //move down
-            moveDown();
-          }
+          try {
+            if (widget.lists![draggedListIndex!].items!.length >
+                    draggedItemIndex! + 1 &&
+                dy! >
+                    bottomItemY! +
+                        listStates[draggedListIndex!]
+                                .itemStates[draggedItemIndex! + 1]
+                                .height /
+                            2) {
+              //move down
+              moveDown();
+            }
+          } catch (_) {}
         } else {
           //dragging list
           if (0 <= draggedListIndex! - 1 && dx! < leftListX! + 45) {
