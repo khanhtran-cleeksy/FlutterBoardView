@@ -15,17 +15,14 @@ class BoardView extends StatefulWidget {
   EdgeInsets? padding;
   Decoration? decoration;
   bool? scrollbar;
-  ScrollbarStyle? scrollbarStyle;
   BoardViewController? boardViewController;
   int dragDelay;
-
   Function(bool)? itemInMiddleWidget;
   OnDropBottomWidget? onDropItemInMiddleWidget;
   BoardView(
       {Key? key,
       this.itemInMiddleWidget,
       this.scrollbar,
-      this.scrollbarStyle,
       this.boardViewController,
       this.dragDelay = 600,
       this.onDropItemInMiddleWidget,
@@ -170,7 +167,7 @@ class BoardViewState extends State<BoardView>
     widget.lists!.insert(draggedListIndex!, list);
     listStates.insert(draggedListIndex!, listState);
     canDrag = false;
-    if (boardViewController != null && boardViewController.hasClients) {
+    if (boardViewController.hasClients) {
       int? tempListIndex = draggedListIndex;
       boardViewController
           .animateTo((currentPage + 1) * (widget.width + widget.margin!),
@@ -188,19 +185,6 @@ class BoardViewState extends State<BoardView>
           canDrag = true;
         });
       });
-      // boardViewController
-      //     .animateTo(draggedListIndex! * widget.width,
-      //         duration: new Duration(milliseconds: 400), curve: Curves.ease)
-      //     .whenComplete(() {
-      //   RenderBox object =
-      //       listStates[tempListIndex!].context.findRenderObject() as RenderBox;
-      //   Offset pos = object.localToGlobal(Offset.zero);
-      //   leftListX = pos.dx;
-      //   rightListX = pos.dx + object.size.width;
-      //   Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
-      //     canDrag = true;
-      //   });
-      // });
     }
     if (mounted) {
       setState(() {});
@@ -221,8 +205,7 @@ class BoardViewState extends State<BoardView>
     double closestValue = 10000;
     draggedItemIndex = 0;
     for (int i = 0; i < listStates[draggedListIndex!].itemStates.length; i++) {
-      if (listStates[draggedListIndex!].itemStates[i].mounted &&
-          listStates[draggedListIndex!].itemStates[i].context != null) {
+      if (listStates[draggedListIndex!].itemStates[i].mounted) {
         RenderBox box = listStates[draggedListIndex!]
             .itemStates[i]
             .context
@@ -244,7 +227,7 @@ class BoardViewState extends State<BoardView>
     if (listStates[draggedListIndex!].mounted) {
       listStates[draggedListIndex!].setState(() {});
     }
-    if (boardViewController != null && boardViewController.hasClients) {
+    if (boardViewController.hasClients) {
       int? tempListIndex = draggedListIndex;
       int? tempItemIndex = draggedItemIndex;
       boardViewController
@@ -274,26 +257,6 @@ class BoardViewState extends State<BoardView>
           canDrag = true;
         });
       });
-      // boardViewController
-      //     .animateTo(draggedListIndex! * widget.width,
-      //         duration: new Duration(milliseconds: 400), curve: Curves.ease)
-      //     .whenComplete(() {
-      //   RenderBox object =
-      //       listStates[tempListIndex!].context.findRenderObject() as RenderBox;
-      //   Offset pos = object.localToGlobal(Offset.zero);
-      //   leftListX = pos.dx;
-      //   rightListX = pos.dx + object.size.width;
-      //   RenderBox box = listStates[tempListIndex]
-      //       .itemStates[tempItemIndex!]
-      //       .context
-      //       .findRenderObject() as RenderBox;
-      //   Offset itemPos = box.localToGlobal(Offset.zero);
-      //   topItemY = itemPos.dy;
-      //   bottomItemY = itemPos.dy + box.size.height;
-      //   Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
-      //     canDrag = true;
-      //   });
-      // });
     }
     if (mounted) {
       setState(() {});
@@ -311,9 +274,7 @@ class BoardViewState extends State<BoardView>
     widget.lists!.insert(draggedListIndex!, list);
     listStates.insert(draggedListIndex!, listState);
     canDrag = false;
-    if (boardViewController != null &&
-        boardViewController.hasClients &&
-        currentPage > 0) {
+    if (boardViewController.hasClients && currentPage > 0) {
       int? tempListIndex = draggedListIndex;
       boardViewController
           .animateTo((currentPage - 1) * (widget.width + widget.margin!),
@@ -331,20 +292,6 @@ class BoardViewState extends State<BoardView>
           canDrag = true;
         });
       });
-      // boardViewController
-      //     .animateTo(draggedListIndex! * widget.width,
-      //         duration: new Duration(milliseconds: widget.dragDelay),
-      //         curve: Curves.ease)
-      //     .whenComplete(() {
-      //   RenderBox object =
-      //       listStates[tempListIndex!].context.findRenderObject() as RenderBox;
-      //   Offset pos = object.localToGlobal(Offset.zero);
-      //   leftListX = pos.dx;
-      //   rightListX = pos.dx + object.size.width;
-      //   Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
-      //     canDrag = true;
-      //   });
-      // });
     }
     if (mounted) {
       setState(() {});
@@ -365,8 +312,7 @@ class BoardViewState extends State<BoardView>
     double closestValue = 10000;
     draggedItemIndex = 0;
     for (int i = 0; i < listStates[draggedListIndex!].itemStates.length; i++) {
-      if (listStates[draggedListIndex!].itemStates[i].mounted &&
-          listStates[draggedListIndex!].itemStates[i].context != null) {
+      if (listStates[draggedListIndex!].itemStates[i].mounted) {
         RenderBox box = listStates[draggedListIndex!]
             .itemStates[i]
             .context
@@ -388,9 +334,7 @@ class BoardViewState extends State<BoardView>
     if (listStates[draggedListIndex!].mounted) {
       listStates[draggedListIndex!].setState(() {});
     }
-    if (boardViewController != null &&
-        boardViewController.hasClients &&
-        currentPage > 0) {
+    if (boardViewController.hasClients && currentPage > 0) {
       int? tempListIndex = draggedListIndex;
       int? tempItemIndex = draggedItemIndex;
       boardViewController
@@ -420,26 +364,6 @@ class BoardViewState extends State<BoardView>
           canDrag = true;
         });
       });
-      // boardViewController
-      //     .animateTo(draggedListIndex! * widget.width,
-      //         duration: new Duration(milliseconds: 400), curve: Curves.ease)
-      //     .whenComplete(() {
-      //   RenderBox object =
-      //       listStates[tempListIndex!].context.findRenderObject() as RenderBox;
-      //   Offset pos = object.localToGlobal(Offset.zero);
-      //   leftListX = pos.dx;
-      //   rightListX = pos.dx + object.size.width;
-      //   RenderBox box = listStates[tempListIndex]
-      //       .itemStates[tempItemIndex!]
-      //       .context
-      //       .findRenderObject() as RenderBox;
-      //   Offset itemPos = box.localToGlobal(Offset.zero);
-      //   topItemY = itemPos.dy;
-      //   bottomItemY = itemPos.dy + box.size.height;
-      //   Future.delayed(new Duration(milliseconds: widget.dragDelay), () {
-      //     canDrag = true;
-      //   });
-      // });
     }
     if (mounted) {
       setState(() {});
@@ -457,7 +381,7 @@ class BoardViewState extends State<BoardView>
   @mustCallSuper
   Widget build(BuildContext context) {
     if (boardViewController.hasClients) {
-      WidgetsBinding.instance!.addPostFrameCallback((Duration duration) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         try {
           if (cardSize == null && _cardKey.currentContext != null) {
             RenderBox? _cardBox =
@@ -618,14 +542,7 @@ class BoardViewState extends State<BoardView>
         }
       },
     );
-    // if (widget.scrollbar != true) {
-    //   listWidget = Column(
-    //     children: [
-    //       listWidget,
-    //
-    //     ],
-    //   );
-    // }
+
     List<Widget> stackWidgets = <Widget>[listWidget];
     bool isInBottomWidget = false;
     if (dy != null) {
@@ -643,8 +560,7 @@ class BoardViewState extends State<BoardView>
         offsetY != null &&
         dx != null &&
         dy != null &&
-        height != null &&
-        widget.width != null) {
+        height != null) {
       if (canDrag && dxInit != null && dyInit != null && !isInBottomWidget) {
         if (draggedItemIndex != null &&
             draggedItem != null &&
@@ -653,7 +569,7 @@ class BoardViewState extends State<BoardView>
           //dragging item
           if (0 <= draggedListIndex! - 1 && dx! < leftListX! + 45) {
             //scroll left
-            if (boardViewController != null && boardViewController.hasClients) {
+            if (boardViewController.hasClients) {
               boardViewController.animateTo(
                   boardViewController.position.pixels - 5,
                   duration: new Duration(milliseconds: 10),
@@ -671,7 +587,7 @@ class BoardViewState extends State<BoardView>
           if (widget.lists!.length > draggedListIndex! + 1 &&
               dx! > rightListX! - 45) {
             //scroll right
-            if (boardViewController != null && boardViewController.hasClients) {
+            if (boardViewController.hasClients) {
               boardViewController.animateTo(
                   boardViewController.position.pixels + 5,
                   duration: new Duration(milliseconds: 10),
@@ -702,8 +618,7 @@ class BoardViewState extends State<BoardView>
           }
           if (dy! < topListY! + 70) {
             //scroll up
-            if (listStates[draggedListIndex!].boardListController != null &&
-                listStates[draggedListIndex!].boardListController.hasClients &&
+            if (listStates[draggedListIndex!].boardListController.hasClients &&
                 !isScrolling) {
               isScrolling = true;
               double pos = listStates[draggedListIndex!]
@@ -763,8 +678,7 @@ class BoardViewState extends State<BoardView>
           if (dy! > tempBottom! - 70) {
             //scroll down
 
-            if (listStates[draggedListIndex!].boardListController != null &&
-                listStates[draggedListIndex!].boardListController.hasClients) {
+            if (listStates[draggedListIndex!].boardListController.hasClients) {
               isScrolling = true;
               double pos = listStates[draggedListIndex!]
                   .boardListController
@@ -819,7 +733,7 @@ class BoardViewState extends State<BoardView>
           //dragging list
           if (0 <= draggedListIndex! - 1 && dx! < leftListX! + 45) {
             //scroll left
-            if (boardViewController != null && boardViewController.hasClients) {
+            if (boardViewController.hasClients) {
               boardViewController.animateTo(
                   boardViewController.position.pixels - 5,
                   duration: new Duration(milliseconds: 10),
@@ -836,7 +750,7 @@ class BoardViewState extends State<BoardView>
           if (widget.lists!.length > draggedListIndex! + 1 &&
               dx! > rightListX! - 45) {
             //scroll right
-            if (boardViewController != null && boardViewController.hasClients) {
+            if (boardViewController.hasClients) {
               boardViewController.animateTo(
                   boardViewController.position.pixels + 5,
                   duration: new Duration(milliseconds: 10),
@@ -867,7 +781,7 @@ class BoardViewState extends State<BoardView>
         stackWidgets
             .add(Container(key: _middleWidgetKey, child: widget.middleWidget));
       }
-      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         if (mounted) {
           setState(() {});
         }
@@ -1008,16 +922,4 @@ class BoardViewState extends State<BoardView>
       }
     }
   }
-}
-
-class ScrollbarStyle {
-  double hoverThickness;
-  double thickness;
-  Radius radius;
-  Color color;
-  ScrollbarStyle(
-      {this.radius = const Radius.circular(10),
-      this.hoverThickness = 10,
-      this.thickness = 10,
-      this.color = Colors.black});
 }

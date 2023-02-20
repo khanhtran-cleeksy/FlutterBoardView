@@ -5,7 +5,6 @@ import 'package:boardview/boardview_controller.dart';
 import 'package:example/BoardItemObject.dart';
 import 'package:example/BoardListObject.dart';
 import 'package:example/config_refresher.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 

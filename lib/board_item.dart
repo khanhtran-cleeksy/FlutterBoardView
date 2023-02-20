@@ -98,7 +98,7 @@ class BoardItemState extends State<BoardItem>
   @mustCallSuper
   Widget build(BuildContext context) {
     super.build(context);
-    WidgetsBinding.instance!
+    WidgetsBinding.instance
         .addPostFrameCallback((_) => afterFirstLayout(context));
     if (widget.boardList!.itemStates.length > widget.index!) {
       widget.boardList!.itemStates.removeAt(widget.index!);

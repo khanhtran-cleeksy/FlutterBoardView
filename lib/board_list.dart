@@ -101,10 +101,6 @@ class BoardListState extends State<BoardList>
     super.build(context);
     List<Widget> listWidgets = [];
     if (widget.header != null) {
-      Color? headerBackgroundColor = Color.fromARGB(255, 255, 255, 255);
-      if (widget.headerBackgroundColor != null) {
-        headerBackgroundColor = widget.headerBackgroundColor;
-      }
       listWidgets.add(
         GestureDetector(
           onTap: () {
@@ -296,12 +292,6 @@ class BoardListState extends State<BoardList>
                                       widget.items![index].onStartDragItem,
                                 ),
                               );
-                              if (widget.boardView!.draggedItemIndex == index &&
-                                  widget.boardView!.draggedListIndex ==
-                                      widget.index) {
-                              } else {
-                                return widget.items![index];
-                              }
                             },
                           )
                         : widget.immovableWidget ?? SizedBox(),
