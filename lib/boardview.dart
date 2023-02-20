@@ -251,11 +251,8 @@ class BoardViewState extends State<BoardView>
           .animateTo((currentPage + 1) * (widget.width + widget.margin!),
               duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() async {
-        try {
+        if (boardViewController.positions.isNotEmpty)
           currentPos = boardViewController.positions.single.pixels;
-        } catch (e) {
-          currentPos = widget.width;
-        }
         currentPage = currentPage + 1;
         setState(() {});
         if (draggedListIndex != null &&
