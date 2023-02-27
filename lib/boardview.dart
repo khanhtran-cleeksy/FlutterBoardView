@@ -393,6 +393,7 @@ class BoardViewState extends State<BoardView>
           if (canDrag) {
             if (boardViewController.positions.single.pixels >
                 (widget.width) * .01 + currentPos) {
+              canDrag = false;
               boardViewController
                   .animateTo(
                       (currentPage + 1) * (widget.width + widget.margin!),
@@ -401,6 +402,7 @@ class BoardViewState extends State<BoardView>
                   .then((value) {
                 currentPos = boardViewController.positions.single.pixels;
                 currentPage = currentPage + 1;
+                canDrag = true;
                 setState(() {});
               });
             } else {
