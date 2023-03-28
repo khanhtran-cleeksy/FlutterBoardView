@@ -37,10 +37,10 @@ class _BoardViewExampleState extends State<BoardViewExample>
   List<BoardListObject> _listData = [
     BoardListObject(
       title: "List title 1",
-      items: List.generate(1000, (index) {
+      items: List.generate(10, (index) {
         return BoardItemObject(title: "Item ${index + 1}");
       }),
-      itemCount: 1000,
+      itemCount: 100,
     ),
     BoardListObject(
       title: "List title 2",

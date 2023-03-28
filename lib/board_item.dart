@@ -95,7 +95,6 @@ class BoardItemState extends State<BoardItem>
   }
 
   @override
-  @mustCallSuper
   Widget build(BuildContext context) {
     super.build(context);
     WidgetsBinding.instance

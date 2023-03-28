@@ -378,7 +378,6 @@ class BoardViewState extends State<BoardView>
   Size? cardSize;
 
   @override
-  @mustCallSuper
   Widget build(BuildContext context) {
     if (boardViewController.hasClients) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
