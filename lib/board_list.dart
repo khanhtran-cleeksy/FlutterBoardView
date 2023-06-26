@@ -109,7 +109,9 @@ class BoardListState extends State<BoardList>
 
     return widget.customWidget ??
         Container(
-          padding: widget.padding,
+          padding: EdgeInsets.only(
+              top: widget.padding?.top ?? 0,
+              bottom: widget.padding?.bottom ?? 0),
           decoration:
               widget.decoration ?? BoxDecoration(color: backgroundColor),
           child: Column(
@@ -143,6 +145,9 @@ class BoardListState extends State<BoardList>
                 },
                 child: Container(
                   color: widget.headerBackgroundColor,
+                  padding: EdgeInsets.only(
+                      right: widget.padding?.right ?? 0,
+                      left: widget.padding?.left ?? 0),
                   child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -163,6 +168,9 @@ class BoardListState extends State<BoardList>
                               child: ListView.builder(
                                 shrinkWrap: true,
                                 addAutomaticKeepAlives: true,
+                                padding: EdgeInsets.only(
+                                    right: widget.padding?.right ?? 0,
+                                    left: widget.padding?.left ?? 0),
                                 physics: AlwaysScrollableScrollPhysics(),
                                 controller: boardListController,
                                 itemCount: widget.items!.length,
