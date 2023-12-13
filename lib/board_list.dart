@@ -160,13 +160,14 @@ class BoardListState extends State<BoardList>
                     child: widget.movable
                         ? CupertinoScrollbar(
                             radius: const Radius.circular(10),
+                            controller: boardListController,
                             child: LoadMore(
                               isFinish: !widget.loadMore,
                               onLoadMore: () {
                                 return widget.onLoadMore!(widget.index!);
                               },
                               child: ListView.builder(
-                                shrinkWrap: true,
+                                shrinkWrap: false,
                                 addAutomaticKeepAlives: true,
                                 padding: EdgeInsets.only(
                                     right: widget.padding?.right ?? 0,
