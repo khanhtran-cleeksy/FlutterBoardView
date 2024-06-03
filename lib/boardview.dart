@@ -19,21 +19,21 @@ class BoardView extends StatefulWidget {
   int dragDelay;
   Function(bool)? itemInMiddleWidget;
   OnDropBottomWidget? onDropItemInMiddleWidget;
-  BoardView(
-      {Key? key,
-      this.itemInMiddleWidget,
-      this.scrollbar,
-      this.boardViewController,
-      this.dragDelay = 600,
-      this.onDropItemInMiddleWidget,
-      this.isSelecting = false,
-      this.lists,
-      this.width = 350,
-      this.decoration,
-      this.margin,
-      this.middleWidget,
-      this.padding,
-      this.bottomPadding})
+
+  BoardView({Key? key,
+    this.itemInMiddleWidget,
+    this.scrollbar,
+    this.boardViewController,
+    this.dragDelay = 600,
+    this.onDropItemInMiddleWidget,
+    this.isSelecting = false,
+    this.lists,
+    this.width = 350,
+    this.decoration,
+    this.margin,
+    this.middleWidget,
+    this.padding,
+    this.bottomPadding})
       : super(key: key);
 
   @override
@@ -42,8 +42,8 @@ class BoardView extends StatefulWidget {
   }
 }
 
-typedef void OnDropBottomWidget(
-    int? listIndex, int? itemIndex, double percentX);
+typedef void OnDropBottomWidget(int? listIndex, int? itemIndex,
+    double percentX);
 typedef void OnDropItem(int? listIndex, int? itemIndex);
 typedef void OnDropList(int? listIndex);
 
@@ -171,13 +171,13 @@ class BoardViewState extends State<BoardView>
       int? tempListIndex = draggedListIndex;
       boardViewController
           .animateTo((currentPage + 1) * (widget.width + widget.margin!),
-              duration: new Duration(milliseconds: 400), curve: Curves.ease)
+          duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage + 1;
         setState(() {});
         RenderBox object =
-            listStates[tempListIndex!].context.findRenderObject() as RenderBox;
+        listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
         leftListX = pos.dx;
         rightListX = pos.dx + object.size.width;
@@ -232,7 +232,7 @@ class BoardViewState extends State<BoardView>
       int? tempItemIndex = draggedItemIndex;
       boardViewController
           .animateTo((currentPage + 1) * (widget.width + widget.margin!),
-              duration: new Duration(milliseconds: 400), curve: Curves.ease)
+          duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() async {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage + 1;
@@ -278,13 +278,13 @@ class BoardViewState extends State<BoardView>
       int? tempListIndex = draggedListIndex;
       boardViewController
           .animateTo((currentPage - 1) * (widget.width + widget.margin!),
-              duration: new Duration(milliseconds: 400), curve: Curves.ease)
+          duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .then((value) {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage > 0 ? currentPage - 1 : currentPage;
         setState(() {});
         RenderBox object =
-            listStates[tempListIndex!].context.findRenderObject() as RenderBox;
+        listStates[tempListIndex!].context.findRenderObject() as RenderBox;
         Offset pos = object.localToGlobal(Offset.zero);
         leftListX = pos.dx;
         rightListX = pos.dx + object.size.width;
@@ -339,7 +339,7 @@ class BoardViewState extends State<BoardView>
       int? tempItemIndex = draggedItemIndex;
       boardViewController
           .animateTo((currentPage - 1) * (widget.width + widget.margin!),
-              duration: new Duration(milliseconds: 400), curve: Curves.ease)
+          duration: new Duration(milliseconds: 400), curve: Curves.ease)
           .whenComplete(() {
         currentPos = boardViewController.positions.single.pixels;
         currentPage = currentPage > 0 ? currentPage - 1 : currentPage;
@@ -374,30 +374,25 @@ class BoardViewState extends State<BoardView>
   double currentPos = 0;
   int currentPage = 0;
 
-  final GlobalKey _cardKey = GlobalKey();
-  Size? cardSize;
+  final GlobalKey boardKey = GlobalKey();
+  double? boardHeight;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (boardViewController.hasClients) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         try {
-          if (cardSize == null && _cardKey.currentContext != null) {
-            RenderBox? _cardBox =
-                _cardKey.currentContext?.findRenderObject() as RenderBox? ??
-                    null;
-            cardSize = _cardBox?.size ?? null;
-            setState(() {});
-          }
+          _setBoardHeight();
           if (canDrag) {
             if (boardViewController.positions.single.pixels >
                 (widget.width) * .01 + currentPos) {
               canDrag = false;
               boardViewController
                   .animateTo(
-                      (currentPage + 1) * (widget.width + widget.margin!),
-                      duration: new Duration(milliseconds: 300),
-                      curve: Curves.ease)
+                  (currentPage + 1) * (widget.width + widget.margin!),
+                  duration: new Duration(milliseconds: 300),
+                  curve: Curves.ease)
                   .then((value) {
                 currentPos = boardViewController.positions.single.pixels;
                 currentPage = currentPage + 1;
@@ -410,9 +405,9 @@ class BoardViewState extends State<BoardView>
                 canDrag = false;
                 boardViewController
                     .animateTo(
-                        (currentPage - 1) * (widget.width + widget.margin!),
-                        duration: new Duration(milliseconds: 300),
-                        curve: Curves.ease)
+                    (currentPage - 1) * (widget.width + widget.margin!),
+                    duration: new Duration(milliseconds: 300),
+                    curve: Curves.ease)
                     .then((value) {
                   currentPos = boardViewController.positions.single.pixels;
                   currentPage = currentPage > 0 ? currentPage - 1 : currentPage;
@@ -422,8 +417,8 @@ class BoardViewState extends State<BoardView>
               } else {
                 boardViewController
                     .animateTo((currentPage) * (widget.width + widget.margin!),
-                        duration: new Duration(milliseconds: 300),
-                        curve: Curves.ease)
+                    duration: new Duration(milliseconds: 300),
+                    curve: Curves.ease)
                     .then((value) {
                   currentPos = boardViewController.positions.single.pixels;
                 });
@@ -496,14 +491,14 @@ class BoardViewState extends State<BoardView>
             margin: EdgeInsets.fromLTRB(
                 index == 0
                     ? widget.margin != null
-                        ? widget.margin! * 2
-                        : 32
+                    ? widget.margin! * 2
+                    : 32
                     : widget.margin ?? 16,
                 0,
                 index == widget.lists!.length - 1
                     ? widget.margin != null
-                        ? widget.margin! * 2
-                        : 32
+                    ? widget.margin! * 2
+                    : 32
                     : 0,
                 0),
             child: Row(
@@ -525,14 +520,14 @@ class BoardViewState extends State<BoardView>
             margin: EdgeInsets.fromLTRB(
                 index == 0
                     ? widget.margin != null
-                        ? widget.margin! * 2
-                        : 32
+                    ? widget.margin! * 2
+                    : 32
                     : widget.margin ?? 16,
                 0,
                 index == widget.lists!.length - 1
                     ? widget.margin != null
-                        ? widget.margin! * 2
-                        : 32
+                    ? widget.margin! * 2
+                    : 32
                     : 0,
                 0),
             child: Opacity(
@@ -549,7 +544,10 @@ class BoardViewState extends State<BoardView>
     List<Widget> stackWidgets = <Widget>[listWidget];
     bool isInBottomWidget = false;
     if (dy != null) {
-      if (MediaQuery.of(context).size.height - dy! < 80) {
+      if (MediaQuery
+          .of(context)
+          .size
+          .height - dy! < 80) {
         isInBottomWidget = true;
       }
     }
@@ -607,15 +605,21 @@ class BoardViewState extends State<BoardView>
           }
           if (0 <= draggedListIndex! - 1 &&
               (dx! < leftListX! &&
-                  dx! < MediaQuery.of(context).size.width / 2)) {
+                  dx! < MediaQuery
+                      .of(context)
+                      .size
+                      .width / 2)) {
             //move left
             moveLeft();
           }
           if (((widget.lists!.length > draggedListIndex! + 1 &&
-                      widget.lists![draggedListIndex! + 1].customWidget ==
-                          null) &&
-                  dx! > rightListX!) &&
-              (dx! > MediaQuery.of(context).size.width / 2)) {
+              widget.lists![draggedListIndex! + 1].customWidget ==
+                  null) &&
+              dx! > rightListX!) &&
+              (dx! > MediaQuery
+                  .of(context)
+                  .size
+                  .width / 2)) {
             //move right
             moveRight();
           }
@@ -631,13 +635,13 @@ class BoardViewState extends State<BoardView>
               listStates[draggedListIndex!]
                   .boardListController
                   .animateTo(
-                      listStates[draggedListIndex!]
-                              .boardListController
-                              .position
-                              .pixels -
-                          5,
-                      duration: new Duration(milliseconds: 10),
-                      curve: Curves.ease)
+                  listStates[draggedListIndex!]
+                      .boardListController
+                      .position
+                      .pixels -
+                      5,
+                  duration: new Duration(milliseconds: 10),
+                  curve: Curves.ease)
                   .whenComplete(() {
                 pos -= listStates[draggedListIndex!]
                     .boardListController
@@ -664,8 +668,8 @@ class BoardViewState extends State<BoardView>
               dy! <
                   topItemY! -
                       listStates[draggedListIndex!]
-                              .itemStates[draggedItemIndex! - 1]
-                              .height /
+                          .itemStates[draggedItemIndex! - 1]
+                          .height /
                           2) {
             //move up
             moveUp();
@@ -690,13 +694,13 @@ class BoardViewState extends State<BoardView>
               listStates[draggedListIndex!]
                   .boardListController
                   .animateTo(
-                      listStates[draggedListIndex!]
-                              .boardListController
-                              .position
-                              .pixels +
-                          5,
-                      duration: new Duration(milliseconds: 10),
-                      curve: Curves.ease)
+                  listStates[draggedListIndex!]
+                      .boardListController
+                      .position
+                      .pixels +
+                      5,
+                  duration: new Duration(milliseconds: 10),
+                  curve: Curves.ease)
                   .whenComplete(() {
                 pos -= listStates[draggedListIndex!]
                     .boardListController
@@ -720,14 +724,14 @@ class BoardViewState extends State<BoardView>
             }
           }
           if (widget.lists![draggedListIndex!].items!.length >
-                  draggedItemIndex! + 1 &&
+              draggedItemIndex! + 1 &&
               listStates[draggedListIndex!].itemStates.length >
                   draggedItemIndex! + 1 &&
               dy! >
                   bottomItemY! +
                       listStates[draggedListIndex!]
-                              .itemStates[draggedItemIndex! + 1]
-                              .height /
+                          .itemStates[draggedItemIndex! + 1]
+                          .height /
                           2) {
             //move down
             moveDown();
@@ -767,8 +771,8 @@ class BoardViewState extends State<BoardView>
             }
           }
           if ((widget.lists!.length > draggedListIndex! + 1 &&
-                  (widget.lists![draggedListIndex! + 1].customWidget == null &&
-                      widget.lists![draggedListIndex! + 1].draggable)) &&
+              (widget.lists![draggedListIndex! + 1].customWidget == null &&
+                  widget.lists![draggedListIndex! + 1].draggable)) &&
               dx! > rightListX!) {
             //move right
             moveListRight();
@@ -798,9 +802,9 @@ class BoardViewState extends State<BoardView>
       ));
     }
 
-    return Container(
-        height: cardSize?.height ?? null,
-        key: _cardKey,
+    return SizedBox(
+        height: boardHeight,
+        key: boardKey,
         child: Listener(
             onPointerMove: (opm) {
               if (draggedItem != null) {
@@ -839,7 +843,10 @@ class BoardViewState extends State<BoardView>
                   widget.onDropItemInMiddleWidget!(
                       startDraggedListIndex,
                       startDraggedItemIndex,
-                      opu.position.dx / MediaQuery.of(context).size.width);
+                      opu.position.dx / MediaQuery
+                          .of(context)
+                          .size
+                          .width);
                 } else {
                   onDropItem!(tempDraggedListIndex, tempDraggedItemIndex);
                 }
@@ -849,7 +856,10 @@ class BoardViewState extends State<BoardView>
                 if (_isInWidget && widget.onDropItemInMiddleWidget != null) {
                   onDropList!(tempDraggedListIndex);
                   widget.onDropItemInMiddleWidget!(tempDraggedListIndex, null,
-                      opu.position.dx / MediaQuery.of(context).size.width);
+                      opu.position.dx / MediaQuery
+                          .of(context)
+                          .size
+                          .width);
                 } else {
                   onDropList!(tempDraggedListIndex);
                 }
@@ -896,24 +906,44 @@ class BoardViewState extends State<BoardView>
                           widget.lists!.any((e) => e.customWidget != null)
                               ? widget.lists!.length - 1
                               : widget.lists!.length,
-                          (index) => AnimatedContainer(
-                            duration: Duration(milliseconds: 150),
-                            margin: EdgeInsets.only(right: 7),
-                            decoration: BoxDecoration(
-                              color: currentPage == index
-                                  ? Color(0xFF666E83)
-                                  : Color(0xFFD7DBE4),
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                            height: currentPage == index ? 8 : 6,
-                            width: currentPage == index ? 8 : 6,
-                          ),
+                              (index) =>
+                              AnimatedContainer(
+                                duration: Duration(milliseconds: 150),
+                                margin: EdgeInsets.only(right: 7),
+                                decoration: BoxDecoration(
+                                  color: currentPage == index
+                                      ? Color(0xFF666E83)
+                                      : Color(0xFFD7DBE4),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                height: currentPage == index ? 8 : 6,
+                                width: currentPage == index ? 8 : 6,
+                              ),
                         )
                       ],
                     ),
                   )
               ],
             )));
+  }
+
+  ///This method to set height for Board View to improve performance
+  ///Because of Widget with specific height perform better than Expanded by default
+  void _setBoardHeight() async {
+    final isKeyboardOpen = View
+        .of(context)
+        .viewInsets
+        .bottom != 0.0;
+    //if isKeyboardOpen, return and wait for next frame run this method automatically
+    if (isKeyboardOpen) return;
+    if (boardHeight != null) return;
+    if (boardKey.currentContext == null) return;
+    //
+    final box =
+    boardKey.currentContext?.findRenderObject() as RenderBox?;
+    final newHeight = box?.size.height;
+    boardHeight = newHeight;
+    setState(() {});
   }
 
   void run() {
