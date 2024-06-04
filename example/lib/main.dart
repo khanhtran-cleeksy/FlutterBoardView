@@ -34,29 +34,16 @@ class BoardViewExample extends StatefulWidget {
 
 class _BoardViewExampleState extends State<BoardViewExample>
     with AutomaticKeepAliveClientMixin<BoardViewExample> {
-  List<BoardListObject> _listData = [
-    BoardListObject(
-      title: "List title 1",
+  List<BoardListObject> _listData = List.generate(
+    3,
+    (index) => BoardListObject(
+      title: "List title $index",
       items: List.generate(10, (index) {
         return BoardItemObject(title: "Item ${index + 1}");
       }),
-      itemCount: 100,
+      itemCount: 5 * index,
     ),
-    BoardListObject(
-      title: "List title 2",
-      items: List.generate(1, (index) {
-        return BoardItemObject(title: "Item ${index + 1}");
-      }),
-      itemCount: 1,
-    ),
-    BoardListObject(
-      title: "List title 3",
-      items: List.generate(1, (index) {
-        return BoardItemObject(title: "Item ${index + 1}");
-      }),
-      itemCount: 1,
-    )
-  ];
+  );
 
   bool _movable = false;
 
@@ -88,23 +75,25 @@ class _BoardViewExampleState extends State<BoardViewExample>
       appBar: AppBar(
         title: Text("Board View"),
       ),
-      body: SmartRefresher(
-        controller: _refreshController,
-        enablePullDown: true,
-        physics: ClampingScrollPhysics(),
+      body: SafeArea(
+        child: SmartRefresher(
+          controller: _refreshController,
+          enablePullDown: true,
+          physics: ClampingScrollPhysics(),
 
-        // physics: ClampingScrollPhysics(),
-        onRefresh: () async {
-          await Future.delayed(Duration(milliseconds: 2000));
-          _refreshController.refreshCompleted();
-        },
-        child: BoardView(
-          lists: _lists,
-          scrollbar: true,
-          margin: 16,
-          width: MediaQuery.of(context).size.width - 64,
-          decoration: BoxDecoration(color: Colors.red),
-          boardViewController: boardViewController,
+          // physics: ClampingScrollPhysics(),
+          onRefresh: () async {
+            await Future.delayed(Duration(milliseconds: 2000));
+            _refreshController.refreshCompleted();
+          },
+          child: BoardView(
+            lists: _lists,
+            scrollbar: true,
+            margin: 16,
+            width: MediaQuery.of(context).size.width - 64,
+            decoration: BoxDecoration(color: Colors.red),
+            boardViewController: boardViewController,
+          ),
         ),
       ),
     );
