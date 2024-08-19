@@ -47,42 +47,39 @@ class BoardItemState extends State<BoardItem>
   bool get wantKeepAlive => true;
 
   void onDropItem(int? listIndex, int? itemIndex) {
+    var boardList = widget.boardList;
+    var boardView = boardList!.widget.boardView!;
     if (widget.onDropItem != null) {
-      widget.onDropItem!(
-          listIndex,
-          itemIndex,
-          widget.boardList!.widget.boardView!.startListIndex,
-          widget.boardList!.widget.boardView!.startItemIndex,
-          this);
+      widget.onDropItem!(listIndex, itemIndex, boardView.startListIndex,
+          boardView.startItemIndex, this);
     }
-    widget.boardList!.widget.boardView!.draggedItemIndex = null;
-    widget.boardList!.widget.boardView!.draggedListIndex = null;
-    if (widget.boardList!.widget.boardView!.listStates[listIndex!].mounted) {
-      widget.boardList!.widget.boardView!.listStates[listIndex].setState(() {});
+    boardView.draggedItemIndex = null;
+    boardView.draggedListIndex = null;
+    if (boardView.listStates[listIndex!].mounted) {
+      boardView.listStates[listIndex].setState(() {});
     }
   }
 
   void _startDrag(Widget item, BuildContext context) {
-    if (widget.boardList!.widget.boardView != null) {
-      widget.boardList!.widget.boardView!.onDropItem = onDropItem;
-      if (widget.boardList!.mounted) {
-        widget.boardList!.setState(() {});
+    var boardList = widget.boardList;
+    var boardView = boardList!.widget.boardView;
+    if (boardView != null) {
+      boardView.onDropItem = onDropItem;
+      if (boardList.mounted) {
+        boardList.setState(() {});
       }
-      widget.boardList!.widget.boardView!.draggedItemIndex = widget.index;
-      widget.boardList!.widget.boardView!.height = context.size!.height;
-      widget.boardList!.widget.boardView!.draggedListIndex =
-          widget.boardList!.widget.index;
-      widget.boardList!.widget.boardView!.startListIndex =
-          widget.boardList!.widget.index;
-      widget.boardList!.widget.boardView!.startItemIndex = widget.index;
-      widget.boardList!.widget.boardView!.draggedItem = item;
+      boardView.draggedItemIndex = widget.index;
+      boardView.height = context.size!.height;
+      boardView.draggedListIndex = boardList.widget.index;
+      boardView.startListIndex = boardList.widget.index;
+      boardView.startItemIndex = widget.index;
+      boardView.draggedItem = item;
       if (widget.onStartDragItem != null) {
-        widget.onStartDragItem!(
-            widget.boardList!.widget.index, widget.index, this);
+        widget.onStartDragItem!(boardList.widget.index, widget.index, this);
       }
-      widget.boardList!.widget.boardView!.run();
-      if (widget.boardList!.widget.boardView!.mounted) {
-        widget.boardList!.widget.boardView!.setState(() {});
+      boardView.run();
+      if (boardView.mounted) {
+        boardView.setState(() {});
       }
     }
   }
@@ -96,44 +93,40 @@ class BoardItemState extends State<BoardItem>
 
   @override
   Widget build(BuildContext context) {
+    var boardList = widget.boardList;
+    var boardView = boardList!.widget.boardView;
     super.build(context);
     WidgetsBinding.instance
         .addPostFrameCallback((_) => afterFirstLayout(context));
-    if (widget.boardList!.itemStates.length > widget.index!) {
-      widget.boardList!.itemStates.removeAt(widget.index!);
+    if (boardList.itemStates.length > widget.index!) {
+      boardList.itemStates.removeAt(widget.index!);
     }
-    widget.boardList!.itemStates.insert(widget.index!, this);
+    boardList.itemStates.insert(widget.index!, this);
     return GestureDetector(
       onTapDown: (otd) {
         if (widget.draggable) {
           RenderBox object = context.findRenderObject() as RenderBox;
           Offset pos = object.localToGlobal(Offset.zero);
-          RenderBox box =
-              widget.boardList!.context.findRenderObject() as RenderBox;
+          RenderBox box = boardList.context.findRenderObject() as RenderBox;
           Offset listPos = box.localToGlobal(Offset.zero);
-          widget.boardList!.widget.boardView!.leftListX = listPos.dx;
-          widget.boardList!.widget.boardView!.topListY = listPos.dy;
-          widget.boardList!.widget.boardView!.topItemY = pos.dy;
-          widget.boardList!.widget.boardView!.bottomItemY =
-              pos.dy + object.size.height;
-          widget.boardList!.widget.boardView!.bottomListY =
-              listPos.dy + box.size.height;
-          widget.boardList!.widget.boardView!.rightListX =
-              listPos.dx + box.size.width;
-
-          widget.boardList!.widget.boardView!.initialX = pos.dx;
-          widget.boardList!.widget.boardView!.initialY = pos.dy;
+          boardView!.leftListX = listPos.dx;
+          boardView.topListY = listPos.dy;
+          boardView.topItemY = pos.dy;
+          boardView.bottomItemY = pos.dy + object.size.height;
+          boardView.bottomListY = listPos.dy + box.size.height;
+          boardView.rightListX = listPos.dx + box.size.width;
+          boardView.initialX = pos.dx;
+          boardView.initialY = pos.dy;
         }
       },
       onTapCancel: () {},
       onTap: () {
         if (widget.onTapItem != null) {
-          widget.onTapItem!(widget.boardList!.widget.index, widget.index, this);
+          widget.onTapItem!(boardList.widget.index, widget.index, this);
         }
       },
       onLongPress: () {
-        if (!widget.boardList!.widget.boardView!.widget.isSelecting &&
-            widget.draggable) {
+        if (!boardView!.widget.isSelecting && widget.draggable) {
           _startDrag(widget, context);
         }
       },

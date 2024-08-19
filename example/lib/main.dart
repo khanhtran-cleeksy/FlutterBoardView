@@ -69,7 +69,7 @@ class _BoardViewExampleState extends State<BoardViewExample>
       movable: false,
       headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
       backgroundColor: Color.fromARGB(255, 235, 236, 240),
-      customWidget: Container(color: Colors.red, width: 30, height: 50),
+      customWidget: Container(color: Colors.black, width: 30, height: 50),
     ));
     return Scaffold(
       appBar: AppBar(
