@@ -4,6 +4,6 @@ import 'package:boardview/boardview.dart';
 
 void main() {
   test('adds one to input values', () {
-    final boardview = BoardView(lists: [],);
+    final boardview = BoardView(lists: [],margin: 0,);
   });
 }

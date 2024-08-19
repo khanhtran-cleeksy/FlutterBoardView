@@ -88,10 +88,9 @@ class _BoardViewExampleState extends State<BoardViewExample>
           },
           child: BoardView(
             lists: _lists,
-            scrollbar: true,
-            margin: 16,
-            width: MediaQuery.of(context).size.width - 64,
-            decoration: BoxDecoration(color: Colors.red),
+            showBottomScrollBar: true,
+            margin: 8,
+            width: MediaQuery.of(context).size.width,
             boardViewController: boardViewController,
           ),
         ),

@@ -14,34 +14,18 @@ const triggerScrollVertical = 70.0;
 class BoardView extends StatefulWidget {
   final List<BoardList> lists;
   final double width;
-  final Widget? middleWidget;
-  final double? bottomPadding;
-  final bool isSelecting;
-  final double? margin;
-  final EdgeInsets? padding;
-  final Decoration? decoration;
-  final bool scrollbar;
+  final double margin;
+  final bool showBottomScrollBar;
   final BoardViewController? boardViewController;
-  final int dragDelay;
-  final Function(bool)? itemInMiddleWidget;
-  final OnDropBottomWidget? onDropItemInMiddleWidget;
 
-  BoardView(
-      {Key? key,
-      this.itemInMiddleWidget,
-      this.scrollbar = true,
-      this.boardViewController,
-      this.dragDelay = 600,
-      this.onDropItemInMiddleWidget,
-      this.isSelecting = false,
-      required this.lists,
-      this.width = 350,
-      this.decoration,
-      this.margin,
-      this.middleWidget,
-      this.padding,
-      this.bottomPadding})
-      : super(key: key);
+  BoardView({
+    Key? key,
+    this.showBottomScrollBar = true,
+    this.boardViewController,
+    required this.lists,
+    this.width = 350,
+    required this.margin,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -88,14 +72,14 @@ class BoardViewState extends State<BoardView>
 
   bool isScrolling = false;
 
-  bool _isInWidget = false;
-
-  GlobalKey _middleWidgetKey = GlobalKey();
-
   var pointer;
 
   List<BoardList> get lists => widget.lists;
   AutoScrollController scrollBarController = AutoScrollController();
+
+  double get scrollSinglePixels => scrollController.positions.single.pixels;
+
+  double get width => widget.width - widget.margin * 4;
 
   @override
   bool get wantKeepAlive => true;
@@ -109,24 +93,23 @@ class BoardViewState extends State<BoardView>
   }
 
   void moveDown() {
-    var state = listStates[draggedListIndex!];
+    var listIndex = draggedListIndex;
+    var state = listStates[listIndex!];
+    var itemIndex = draggedItemIndex;
     if (topItemY != null) {
-      topItemY = topItemY! + state.itemStates[draggedItemIndex! + 1].height;
+      topItemY = topItemY! + state.itemStates[itemIndex! + 1].height;
     }
     if (bottomItemY != null) {
-      bottomItemY =
-          bottomItemY! + state.itemStates[draggedItemIndex! + 1].height;
+      bottomItemY = bottomItemY! + state.itemStates[itemIndex! + 1].height;
     }
-    var items = lists[draggedListIndex!].items;
-    var item = items![draggedItemIndex!];
-    items.removeAt(draggedItemIndex!);
-    var itemState = state.itemStates[draggedItemIndex!];
-    state.itemStates.removeAt(draggedItemIndex!);
-    if (draggedItemIndex != null) {
-      draggedItemIndex = draggedItemIndex! + 1;
-    }
-    items.insert(draggedItemIndex!, item);
-    state.itemStates.insert(draggedItemIndex!, itemState);
+    var items = lists[listIndex].items;
+    var item = items![itemIndex!];
+    items.removeAt(itemIndex);
+    var itemState = state.itemStates[itemIndex];
+    state.itemStates.removeAt(itemIndex);
+    draggedItemIndex = itemIndex + 1;
+    items.insert(itemIndex, item);
+    state.itemStates.insert(itemIndex, itemState);
     if (state.mounted) {
       state.setState(() {});
     }
@@ -189,7 +172,7 @@ class BoardViewState extends State<BoardView>
   void _setCurrentPage(int value) {
     currentPage = value;
     //
-    if (widget.scrollbar)
+    if (widget.showBottomScrollBar)
       scrollBarController.scrollToIndex(currentPage,
           preferPosition: AutoScrollPosition.middle);
   }
@@ -261,14 +244,12 @@ class BoardViewState extends State<BoardView>
   }
 
   Future<void> _animateTo(int currentIndex) {
-    return scrollController.animateTo(
-        currentIndex * (widget.width + widget.margin!),
-        duration: new Duration(milliseconds: 400),
-        curve: Curves.ease);
+    return scrollController.animateTo(currentIndex * (width + widget.margin),
+        duration: new Duration(milliseconds: 400), curve: Curves.ease);
   }
 
   void _resetCanDrag() async {
-    Future.delayed(Duration(milliseconds: widget.dragDelay), () {
+    Future.delayed(Duration(milliseconds: 600), () {
       canDrag = true;
     });
   }
@@ -377,7 +358,7 @@ class BoardViewState extends State<BoardView>
       try {
         _setBoardHeight();
         if (canDrag) {
-          if (scrollSinglePixels > widget.width * .01 + currentPos) {
+          if (scrollSinglePixels > width * .01 + currentPos) {
             canDrag = false;
             _animateTo(_nextPage).then((value) {
               _setCurrentPos();
@@ -386,7 +367,7 @@ class BoardViewState extends State<BoardView>
               _rebuild();
             });
           } else {
-            if (scrollSinglePixels < currentPos - widget.width * .01) {
+            if (scrollSinglePixels < currentPos - width * .01) {
               canDrag = false;
               _animateTo(_previousPage).then((value) {
                 _setCurrentPos();
@@ -428,8 +409,8 @@ class BoardViewState extends State<BoardView>
             onStartDragList: list.onStartDragList,
             onLoadMore: list.onLoadMore,
             customWidget: list.customWidget,
-            decoration: list.decoration ?? widget.decoration,
-            padding: list.padding ?? widget.padding,
+            decoration: list.decoration,
+            padding: list.padding,
           );
         }
         if (list.index != index) {
@@ -450,64 +431,23 @@ class BoardViewState extends State<BoardView>
             onStartDragList: list.onStartDragList,
             onLoadMore: list.onLoadMore,
             customWidget: list.customWidget,
-            decoration: list.decoration ?? widget.decoration,
-            padding: list.padding ?? widget.padding,
+            decoration: list.decoration,
+            padding: list.padding,
           );
         }
 
         var temp = Container(
-            width: widget.width,
-            padding: EdgeInsets.fromLTRB(0, 0, 0, widget.bottomPadding ?? 0),
-            margin: EdgeInsets.fromLTRB(
-                index == 0
-                    ? widget.margin != null
-                        ? widget.margin! * 2
-                        : 32
-                    : widget.margin ?? 16,
-                0,
-                index == lists.length - 1
-                    ? widget.margin != null
-                        ? widget.margin! * 2
-                        : 32
-                    : 0,
-                0),
+            width: width,
+            margin: EdgeInsets.only(
+              left: index == 0 ? widget.margin * 2 : widget.margin,
+              right: index == lists.length - 1 ? widget.margin * 2 : 0,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[Expanded(child: list)],
             ));
-        if (draggedListIndex == index && draggedItemIndex == null) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-              ),
-            ),
-            width: widget.width,
-            padding: EdgeInsets.fromLTRB(0, 0, 0, widget.bottomPadding ?? 0),
-            margin: EdgeInsets.fromLTRB(
-                index == 0
-                    ? widget.margin != null
-                        ? widget.margin! * 2
-                        : 32
-                    : widget.margin ?? 16,
-                0,
-                index == lists.length - 1
-                    ? widget.margin != null
-                        ? widget.margin! * 2
-                        : 32
-                    : 0,
-                0),
-            child: Opacity(
-              opacity: 0.0,
-              child: temp,
-            ),
-          );
-        } else {
-          return temp;
-        }
+        return temp;
       },
     );
 
@@ -517,10 +457,6 @@ class BoardViewState extends State<BoardView>
       if (MediaQuery.of(context).size.height - dy! < 80) {
         isInBottomWidget = true;
       }
-    }
-    if (widget.itemInMiddleWidget != null && _isInWidget != isInBottomWidget) {
-      widget.itemInMiddleWidget!(isInBottomWidget);
-      _isInWidget = isInBottomWidget;
     }
     if (initialX != null &&
         initialY != null &&
@@ -532,15 +468,11 @@ class BoardViewState extends State<BoardView>
       if (canDrag && dxInit != null && dyInit != null && !isInBottomWidget) {
         _handleDragging(context);
       }
-      if (widget.middleWidget != null) {
-        stackWidgets
-            .add(Container(key: _middleWidgetKey, child: widget.middleWidget));
-      }
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         _rebuild();
       });
       stackWidgets.add(Positioned(
-        width: widget.width - 24,
+        width: width,
         height: height,
         child: draggedItem!,
         left: (dx! - offsetX!) + initialX!,
@@ -577,28 +509,12 @@ class BoardViewState extends State<BoardView>
           if (onDropItem != null) {
             int? tempDraggedItemIndex = draggedItemIndex;
             int? tempDraggedListIndex = draggedListIndex;
-            int? startDraggedItemIndex = startItemIndex;
-            int? startDraggedListIndex = startListIndex;
-
-            if (_isInWidget && widget.onDropItemInMiddleWidget != null) {
-              onDropItem!(startDraggedListIndex, startDraggedItemIndex);
-              widget.onDropItemInMiddleWidget!(
-                  startDraggedListIndex,
-                  startDraggedItemIndex,
-                  opu.position.dx / MediaQuery.of(context).size.width);
-            } else {
-              onDropItem!(tempDraggedListIndex, tempDraggedItemIndex);
-            }
+            onDropItem!(tempDraggedListIndex, tempDraggedItemIndex);
           }
           if (onDropList != null) {
             int? tempDraggedListIndex = draggedListIndex;
-            if (_isInWidget && widget.onDropItemInMiddleWidget != null) {
+
               onDropList!(tempDraggedListIndex);
-              widget.onDropItemInMiddleWidget!(tempDraggedListIndex, null,
-                  opu.position.dx / MediaQuery.of(context).size.width);
-            } else {
-              onDropList!(tempDraggedListIndex);
-            }
           }
           draggedItem = null;
           offsetX = null;
@@ -630,7 +546,7 @@ class BoardViewState extends State<BoardView>
                 children: stackWidgets,
               ),
             ),
-            if (widget.scrollbar == true) _buildScrollBar()
+            if (widget.showBottomScrollBar) _buildScrollBar()
           ],
         ),
       ),
@@ -691,13 +607,6 @@ class BoardViewState extends State<BoardView>
       moveUp();
     }
     double? tempBottom = bottomListY;
-    if (widget.middleWidget != null) {
-      if (_middleWidgetKey.currentContext != null) {
-        RenderBox _box =
-            _middleWidgetKey.currentContext!.findRenderObject() as RenderBox;
-        tempBottom = _box.size.height;
-      }
-    }
     //scroll down
     if (dy! > tempBottom! - triggerScrollVertical) {
       _triggerScrollDragItemDown(boardListController);
@@ -762,8 +671,6 @@ class BoardViewState extends State<BoardView>
       _rebuild();
     });
   }
-
-  double get scrollSinglePixels => scrollController.positions.single.pixels;
 
   void _setCurrentPos() {
     currentPos = scrollSinglePixels;

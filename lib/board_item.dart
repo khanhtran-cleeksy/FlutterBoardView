@@ -126,7 +126,7 @@ class BoardItemState extends State<BoardItem>
         }
       },
       onLongPress: () {
-        if (!boardView!.widget.isSelecting && widget.draggable) {
+        if (widget.draggable) {
           _startDrag(widget, context);
         }
       },
