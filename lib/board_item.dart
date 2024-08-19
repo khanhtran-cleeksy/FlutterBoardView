@@ -40,8 +40,9 @@ class BoardItem extends StatefulWidget {
 
 class BoardItemState extends State<BoardItem>
     with AutomaticKeepAliveClientMixin<BoardItem> {
-  late double height;
-  double? width;
+  double? _height;
+
+  double get height => _height ?? 0.0;
 
   @override
   bool get wantKeepAlive => true;
@@ -86,8 +87,7 @@ class BoardItemState extends State<BoardItem>
 
   void afterFirstLayout(BuildContext context) {
     try {
-      height = context.size!.height;
-      width = context.size!.width;
+      _height = context.size!.height;
     } catch (e) {}
   }
 

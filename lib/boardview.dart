@@ -452,12 +452,7 @@ class BoardViewState extends State<BoardView>
     );
 
     List<Widget> stackWidgets = <Widget>[listWidget];
-    bool isInBottomWidget = false;
-    if (dy != null) {
-      if (MediaQuery.of(context).size.height - dy! < 80) {
-        isInBottomWidget = true;
-      }
-    }
+
     if (initialX != null &&
         initialY != null &&
         offsetX != null &&
@@ -465,8 +460,8 @@ class BoardViewState extends State<BoardView>
         dx != null &&
         dy != null &&
         height != null) {
-      if (canDrag && dxInit != null && dyInit != null && !isInBottomWidget) {
-        _handleDragging(context);
+      if (canDrag && dxInit != null && dyInit != null) {
+        _handleDragging();
       }
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         _rebuild();
@@ -514,7 +509,7 @@ class BoardViewState extends State<BoardView>
           if (onDropList != null) {
             int? tempDraggedListIndex = draggedListIndex;
 
-              onDropList!(tempDraggedListIndex);
+            onDropList!(tempDraggedListIndex);
           }
           draggedItem = null;
           offsetX = null;
@@ -553,12 +548,12 @@ class BoardViewState extends State<BoardView>
     );
   }
 
-  void _handleDragging(BuildContext context) {
+  void _handleDragging() {
     if (draggedItemIndex != null &&
         draggedItem != null &&
         topItemY != null &&
         bottomItemY != null) {
-      _handleDraggingItem(context);
+      _handleDraggingItem();
     } else {
       _handleDraggingList();
     }
@@ -579,7 +574,7 @@ class BoardViewState extends State<BoardView>
     }
   }
 
-  void _handleDraggingItem(BuildContext context) {
+  void _handleDraggingItem() {
     //move left
     if (0 <= draggedListIndex! - 1 &&
         dx! < leftListX! + triggerScrollHorizontal) {
@@ -626,11 +621,11 @@ class BoardViewState extends State<BoardView>
   void _triggerScrollDragItemUp(ScrollController boardListController) {
     if (!boardListController.hasClients) return;
     if (isScrolling) return;
-
-    isScrolling = true;
     double pos = boardListController.position.pixels;
+    if (pos <= -5) return;
+    isScrolling = true;
     boardListController
-        .animateTo(max(boardListController.position.pixels - 5, -5),
+        .animateTo(max(pos - 5, -5),
             duration: new Duration(milliseconds: 10), curve: Curves.ease)
         .whenComplete(() {
       pos -= boardListController.position.pixels;
@@ -649,15 +644,14 @@ class BoardViewState extends State<BoardView>
   void _triggerScrollDragItemDown(ScrollController boardListController) {
     if (!boardListController.hasClients) return;
     if (isScrolling) return;
-
-    isScrolling = true;
     double pos = boardListController.position.pixels;
+    double maxExtent = boardListController.position.maxScrollExtent;
+    if (pos >= maxExtent) return;
+    isScrolling = true;
+
     boardListController
-        .animateTo(
-            min(boardListController.position.pixels + 5,
-                boardListController.position.maxScrollExtent + 5),
-            duration: new Duration(milliseconds: 10),
-            curve: Curves.ease)
+        .animateTo(min(pos + 5, maxExtent + 5),
+            duration: new Duration(milliseconds: 10), curve: Curves.ease)
         .whenComplete(() {
       pos -= boardListController.position.pixels;
       if (initialY == null) initialY = 0;
@@ -673,6 +667,7 @@ class BoardViewState extends State<BoardView>
   }
 
   void _setCurrentPos() {
+    if (!scrollController.hasClients) return;
     currentPos = scrollSinglePixels;
   }
 
