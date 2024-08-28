@@ -56,6 +56,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.3"
+  drag_and_drop_lists:
+    dependency: transitive
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "3a0ff1c35d68d2105407863d0fefd4f5ed9b0448"
+      url: "https://github.com/khanhtran-cleeksy-mobile/DragAndDropLists"
+    source: git
+    version: "0.3.3"
   fake_async:
     dependency: transitive
     description:

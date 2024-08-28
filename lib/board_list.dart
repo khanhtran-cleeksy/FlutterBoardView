@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 
 import 'board_item.dart';
 import 'boardview.dart';
 import 'loadmore.dart';
+
+const triggerScrollVertical = 100.0;
 
 typedef void OnDropList(int? listIndex, int? oldListIndex);
 typedef void OnTapList(int? listIndex);
@@ -61,7 +65,10 @@ class BoardList extends StatefulWidget {
 class BoardListState extends State<BoardList>
     with AutomaticKeepAliveClientMixin<BoardList> {
   List<BoardItemState> itemStates = [];
-  ScrollController boardListController = new ScrollController();
+  ScrollController scrollController = new ScrollController();
+  bool isDraggingItem = false;
+  final listKey = GlobalKey();
+  Timer? _timer;
 
   void onDropList(int? listIndex) {
     var boardView = widget.boardView;
@@ -83,13 +90,57 @@ class BoardListState extends State<BoardList>
       boardView.startListIndex = widget.index;
       boardView.height = context.size!.height;
       boardView.draggedListIndex = widget.index!;
-      boardView.draggedItemIndex = null;
       boardView.draggedItem = item;
       boardView.onDropList = onDropList;
       boardView.run();
       if (boardView.mounted) {
         boardView.setState(() {});
       }
+    }
+  }
+
+  void autoScrollDown() {
+    if (_timer?.isActive == true) return;
+    //
+    _cancelTimer();
+    const timerDuration = Duration(milliseconds: 270);
+    const scrollDuration = Duration(milliseconds: 250);
+    _timer = Timer.periodic(timerDuration, (timer) {
+      if (scrollController.offset <
+          scrollController.position.maxScrollExtent - 15) {
+        scrollController.animateTo(
+          scrollController.offset + triggerScrollVertical,
+          duration: scrollDuration,
+          curve: Curves.linear,
+        );
+      } else {
+        _cancelTimer();
+      }
+    });
+  }
+
+  void autoScrollUp() {
+    if (_timer?.isActive == true) return;
+    //
+    _cancelTimer();
+    const timerDuration = Duration(milliseconds: 270);
+    const scrollDuration = Duration(milliseconds: 250);
+    _timer = Timer.periodic(timerDuration, (timer) {
+      if (scrollController.offset > scrollController.position.minScrollExtent) {
+        scrollController.animateTo(
+          scrollController.offset - triggerScrollVertical,
+          duration: scrollDuration,
+          curve: Curves.linear,
+        );
+      } else {
+        _cancelTimer();
+      }
+    });
+  }
+
+  void _cancelTimer() {
+    if (_timer?.isActive == true) {
+      _timer?.cancel();
     }
   }
 
@@ -158,6 +209,7 @@ class BoardListState extends State<BoardList>
               ),
               if (widget.items != null)
                 Expanded(
+                  key: listKey,
                   child: widget.movable
                       ? _buildMovableList(boardView)
                       : widget.immovableWidget ?? SizedBox(),
@@ -168,9 +220,11 @@ class BoardListState extends State<BoardList>
   }
 
   Widget _buildMovableList(BoardViewState boardView) {
+    if (widget.items!.isEmpty) return const SizedBox();
+    //
     return CupertinoScrollbar(
       radius: const Radius.circular(10),
-      controller: boardListController,
+      controller: scrollController,
       child: LoadMore(
         isFinish: !widget.loadMore,
         onLoadMore: () {
@@ -183,29 +237,58 @@ class BoardListState extends State<BoardList>
               right: widget.padding?.right ?? 0,
               left: widget.padding?.left ?? 0),
           physics: AlwaysScrollableScrollPhysics(),
-          controller: boardListController,
-          itemCount: widget.items!.length,
+          controller: scrollController,
+          itemCount:
+              isDraggingItem ? widget.items!.length + 1 : widget.items!.length,
           itemBuilder: (ctx, index) {
-            var item = widget.items![index];
-            return Opacity(
-              opacity: (boardView.draggedItemIndex == index &&
-                      boardView.draggedListIndex == widget.index)
-                  ? 0.0
-                  : 1,
-              child: BoardItem(
+            if (isDraggingItem && index == widget.items!.length) {
+              var item = widget.items![index - 1];
+              return BoardItem(
                 boardList: this,
-                item: item.item,
-                draggable: item.draggable,
+                item: SizedBox(height: 120),
+                draggable: false,
                 index: index,
                 onDropItem: item.onDropItem,
                 onTapItem: item.onTapItem,
                 onDragItem: item.onDragItem,
                 onStartDragItem: item.onStartDragItem,
-              ),
+              );
+            }
+            var item = widget.items![index];
+            return BoardItem(
+              boardList: this,
+              item: item.item,
+              draggable: item.draggable,
+              index: index,
+              onDropItem: item.onDropItem,
+              onTapItem: item.onTapItem,
+              onDragItem: item.onDragItem,
+              onStartDragItem: item.onStartDragItem,
             );
           },
         ),
       ),
     );
+  }
+
+  void onItemPointerMove(PointerMoveEvent event) {
+    final box = listKey.currentContext!.findRenderObject() as RenderBox;
+    final listHeight = box.size.height;
+    final listDyOffset = box.localToGlobal(Offset.zero).dy;
+    final itemPos = event.position.dy - listDyOffset;
+    //
+    if (itemPos >= listHeight) {
+      return autoScrollDown();
+    }
+    if (itemPos < 0) {
+      return autoScrollUp();
+    }
+  }
+
+  void setIsDraggingItem(bool dragging) {
+    if (isDraggingItem != dragging) {
+      isDraggingItem = dragging;
+      setState(() {});
+    }
   }
 }

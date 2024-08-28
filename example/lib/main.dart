@@ -41,7 +41,7 @@ class _BoardViewExampleState extends State<BoardViewExample>
       items: List.generate(index.isEven ? 10 : 2, (index) {
         return BoardItemObject(title: "Item ${index + 1}");
       }),
-      itemCount: index.isEven ? 10 : 2,
+      itemCount: index.isEven ? 30 : 2,
     ),
   );
 
@@ -112,8 +112,8 @@ class _BoardViewExampleState extends State<BoardViewExample>
         });
         //Used to update our local item data
         var item = _listData[oldListIndex!].items![oldItemIndex!];
-        _listData[oldListIndex].items!.removeAt(oldItemIndex);
         _listData[listIndex!].items!.insert(itemIndex!, item);
+        _listData[oldListIndex].items!.removeAt(oldItemIndex);
       },
       onTapItem:
           (int? listIndex, int? itemIndex, BoardItemState? state) async {},

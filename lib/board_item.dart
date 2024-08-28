@@ -1,4 +1,6 @@
 import 'package:boardview/board_list.dart';
+import 'package:boardview/custom_drag_drop_item.widget.dart';
+import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -40,97 +42,86 @@ class BoardItem extends StatefulWidget {
 
 class BoardItemState extends State<BoardItem>
     with AutomaticKeepAliveClientMixin<BoardItem> {
-  double? _height;
-
-  double get height => _height ?? 0.0;
-
   @override
   bool get wantKeepAlive => true;
 
-  void onDropItem(int? listIndex, int? itemIndex) {
-    var boardList = widget.boardList;
-    var boardView = boardList!.widget.boardView!;
-    if (widget.onDropItem != null) {
-      widget.onDropItem!(listIndex, itemIndex, boardView.startListIndex,
-          boardView.startItemIndex, this);
-    }
-    boardView.draggedItemIndex = null;
-    boardView.draggedListIndex = null;
-    if (boardView.listStates[listIndex!].mounted) {
-      boardView.listStates[listIndex].setState(() {});
-    }
-  }
-
-  void _startDrag(Widget item, BuildContext context) {
-    var boardList = widget.boardList;
-    var boardView = boardList!.widget.boardView;
-    if (boardView != null) {
-      boardView.onDropItem = onDropItem;
-      if (boardList.mounted) {
-        boardList.setState(() {});
-      }
-      boardView.draggedItemIndex = widget.index;
-      boardView.height = context.size!.height;
-      boardView.draggedListIndex = boardList.widget.index;
-      boardView.startListIndex = boardList.widget.index;
-      boardView.startItemIndex = widget.index;
-      boardView.draggedItem = item;
-      if (widget.onStartDragItem != null) {
-        widget.onStartDragItem!(boardList.widget.index, widget.index, this);
-      }
-      boardView.run();
-      if (boardView.mounted) {
-        boardView.setState(() {});
-      }
-    }
-  }
-
-  void afterFirstLayout(BuildContext context) {
-    try {
-      _height = context.size!.height;
-    } catch (e) {}
-  }
-
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    var boardList = widget.boardList!;
+
+    return DragAndDropItemWrapper(
+      parameters: _dragAndDropItemParameters(),
+      child: CustomDragDropItemWidget(
+        canDrag: widget.draggable,
+        data: ListViewItemOrderParam(
+            stageIndex: boardList.widget.index!, itemIndex: widget.index!),
+        child: SizedBox(
+          width: double.infinity,
+          child: widget.item!,
+        ),
+      ),
+    );
+  }
+
+  DragAndDropBuilderParameters _dragAndDropItemParameters() {
+    return DragAndDropBuilderParameters(
+      onItemReordered: _onItemReordered,
+      onItemDraggingChanged: _onItemDraggingChanged,
+      onPointerMove: _onPointerMove,
+      onPointerUp: (event) => _cancelTimer(),
+      axis: Axis.horizontal,
+    );
+  }
+
+  void _onItemReordered(
+      DragAndDropItem reorderedItem, DragAndDropItem receiverItem) {
+    final ListViewItemOrderParam oldItem =
+        (reorderedItem as CustomDragDropItemWidget).data;
+    final ListViewItemOrderParam newItem =
+        (receiverItem as CustomDragDropItemWidget).data;
+    print(oldItem);
+    print(newItem);
+    widget.onDropItem!(
+      newItem.stageIndex,
+      newItem.itemIndex,
+      oldItem.stageIndex,
+      oldItem.itemIndex,
+      this,
+    );
+  }
+
+  void _onPointerMove(PointerMoveEvent event) {
     var boardList = widget.boardList;
     var boardView = boardList!.widget.boardView;
-    super.build(context);
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => afterFirstLayout(context));
-    if (boardList.itemStates.length > widget.index!) {
-      boardList.itemStates.removeAt(widget.index!);
-    }
-    boardList.itemStates.insert(widget.index!, this);
-    return GestureDetector(
-      onTapDown: (otd) {
-        if (widget.draggable) {
-          RenderBox object = context.findRenderObject() as RenderBox;
-          Offset pos = object.localToGlobal(Offset.zero);
-          RenderBox box = boardList.context.findRenderObject() as RenderBox;
-          Offset listPos = box.localToGlobal(Offset.zero);
-          boardView!.leftListX = listPos.dx;
-          boardView.topListY = listPos.dy;
-          boardView.topItemY = pos.dy;
-          boardView.bottomItemY = pos.dy + object.size.height;
-          boardView.bottomListY = listPos.dy + box.size.height;
-          boardView.rightListX = listPos.dx + box.size.width;
-          boardView.initialX = pos.dx;
-          boardView.initialY = pos.dy;
-        }
-      },
-      onTapCancel: () {},
-      onTap: () {
-        if (widget.onTapItem != null) {
-          widget.onTapItem!(boardList.widget.index, widget.index, this);
-        }
-      },
-      onLongPress: () {
-        if (widget.draggable) {
-          _startDrag(widget, context);
-        }
-      },
-      child: widget.item,
-    );
+    boardView!.onItemPointerMove(event);
+    boardList.onItemPointerMove(event);
+  }
+
+  void _onItemDraggingChanged(DragAndDropItem item, bool dragging) {
+    var boardList = widget.boardList;
+    boardList!.setIsDraggingItem(dragging);
+
+  }
+
+  void _cancelTimer() {
+    // if (_timer?.isActive == true) {
+    //   _timer?.cancel();
+    // }
+  }
+}
+
+class ListViewItemOrderParam {
+  final int stageIndex;
+  int itemIndex;
+
+  ListViewItemOrderParam({
+    required this.stageIndex,
+    required this.itemIndex,
+  });
+
+  @override
+  String toString() {
+    return "{stageIndex: $stageIndex, itemIndex: $itemIndex}";
   }
 }
