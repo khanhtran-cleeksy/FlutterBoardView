@@ -95,21 +95,20 @@ class BoardViewState extends State<BoardView>
   void moveDown() {
     var listIndex = draggedListIndex;
     var state = listStates[listIndex!];
-    var itemIndex = draggedItemIndex;
     if (topItemY != null) {
-      topItemY = topItemY! + state.itemStates[itemIndex! + 1].height;
+      topItemY = topItemY! + state.itemStates[draggedItemIndex! + 1].height;
     }
     if (bottomItemY != null) {
-      bottomItemY = bottomItemY! + state.itemStates[itemIndex! + 1].height;
+      bottomItemY = bottomItemY! + state.itemStates[draggedItemIndex! + 1].height;
     }
     var items = lists[listIndex].items;
-    var item = items![itemIndex!];
-    items.removeAt(itemIndex);
-    var itemState = state.itemStates[itemIndex];
-    state.itemStates.removeAt(itemIndex);
-    draggedItemIndex = itemIndex + 1;
-    items.insert(itemIndex, item);
-    state.itemStates.insert(itemIndex, itemState);
+    var item = items![draggedItemIndex!];
+    items.removeAt(draggedItemIndex!);
+    var itemState = state.itemStates[draggedItemIndex!];
+    state.itemStates.removeAt(draggedItemIndex!);
+    draggedItemIndex = draggedItemIndex! + 1;
+    items.insert(draggedItemIndex!, item);
+    state.itemStates.insert(draggedItemIndex!, itemState);
     if (state.mounted) {
       state.setState(() {});
     }
@@ -129,9 +128,7 @@ class BoardViewState extends State<BoardView>
     items.removeAt(draggedItemIndex!);
     var itemState = state.itemStates[draggedItemIndex!];
     state.itemStates.removeAt(draggedItemIndex!);
-    if (draggedItemIndex != null) {
-      draggedItemIndex = draggedItemIndex! - 1;
-    }
+    draggedItemIndex = draggedItemIndex! - 1;
     items.insert(draggedItemIndex!, item);
     state.itemStates.insert(draggedItemIndex!, itemState);
     if (state.mounted) {
@@ -178,8 +175,10 @@ class BoardViewState extends State<BoardView>
   }
 
   void moveRight() async {
+    draggedListIndex = draggedListIndex! + 1;
     var items = lists[draggedListIndex!].items;
-    var item = items![draggedItemIndex!];
+    draggedItemIndex = min(draggedItemIndex!, items!.length - 1);
+    var item = items[draggedItemIndex!];
     var state = listStates[draggedListIndex!];
     var itemStates = state.itemStates;
     var itemState = itemStates[draggedItemIndex!];
@@ -187,9 +186,6 @@ class BoardViewState extends State<BoardView>
     itemStates.removeAt(draggedItemIndex!);
     if (state.mounted) {
       state.setState(() {});
-    }
-    if (draggedListIndex != null) {
-      draggedListIndex = draggedListIndex! + 1;
     }
     double closestValue = 10000;
     draggedItemIndex = 0;
@@ -286,17 +282,16 @@ class BoardViewState extends State<BoardView>
   int get _nextPage => currentPage + 1;
 
   void moveLeft() {
+    draggedListIndex = draggedListIndex! - 1;
     var items = lists[draggedListIndex!].items;
-    var item = items![draggedItemIndex!];
+    draggedItemIndex = min(draggedItemIndex!, items!.length - 1);
+    var item = items[draggedItemIndex!];
     var state = listStates[draggedListIndex!];
     var itemState = state.itemStates[draggedItemIndex!];
     items.removeAt(draggedItemIndex!);
     state.itemStates.removeAt(draggedItemIndex!);
     if (state.mounted) {
       state.setState(() {});
-    }
-    if (draggedListIndex != null) {
-      draggedListIndex = draggedListIndex! - 1;
     }
     double closestValue = 10000;
     draggedItemIndex = 0;
@@ -575,46 +570,51 @@ class BoardViewState extends State<BoardView>
   }
 
   void _handleDraggingItem() {
-    //move left
-    if (0 <= draggedListIndex! - 1 &&
-        dx! < leftListX! + triggerScrollHorizontal) {
-      moveLeft();
-    }
-    //move right
-    if ((lists.length > draggedListIndex! + 1 &&
-            lists[draggedListIndex! + 1].customWidget == null) &&
-        dx! > rightListX! - triggerScrollHorizontal) {
-      moveRight();
-    }
-    var boardListController = listStates[draggedListIndex!].boardListController;
-    //scroll up
-    if (dy! < topListY! + triggerScrollVertical) {
-      _triggerScrollDragItemUp(boardListController);
-    }
-    //move up
-    if (0 <= draggedItemIndex! - 1 &&
-        dy! <
-            topItemY! -
-                listStates[draggedListIndex!]
-                        .itemStates[draggedItemIndex! - 1]
-                        .height /
-                    2) {
-      moveUp();
-    }
-    double? tempBottom = bottomListY;
-    //scroll down
-    if (dy! > tempBottom! - triggerScrollVertical) {
-      _triggerScrollDragItemDown(boardListController);
-    }
-    //move down
-    if (lists[draggedListIndex!].items!.length > draggedItemIndex! + 1 &&
-        dy! >
-            bottomItemY! +
-                listStates[draggedListIndex!]
-                        .itemStates[draggedItemIndex! + 1]
-                        .height /
-                    2) {
-      moveDown();
+    try {
+      //move left
+      if (0 <= draggedListIndex! - 1 &&
+          dx! < leftListX! + triggerScrollHorizontal) {
+        moveLeft();
+      }
+      //move right
+      if ((lists.length > draggedListIndex! + 1 &&
+              lists[draggedListIndex! + 1].customWidget == null) &&
+          dx! > rightListX! - triggerScrollHorizontal) {
+        moveRight();
+      }
+      var boardListController =
+          listStates[draggedListIndex!].boardListController;
+      //scroll up
+      if (dy! < topListY! + triggerScrollVertical) {
+        _triggerScrollDragItemUp(boardListController);
+      }
+      //move up
+      if (0 <= draggedItemIndex! - 1 &&
+          dy! <
+              topItemY! -
+                  listStates[draggedListIndex!]
+                          .itemStates[draggedItemIndex! - 1]
+                          .height /
+                      2) {
+        moveUp();
+      }
+      double? tempBottom = bottomListY;
+      //scroll down
+      if (dy! > tempBottom! - triggerScrollVertical) {
+        _triggerScrollDragItemDown(boardListController);
+      }
+      //move down
+      if (lists[draggedListIndex!].items!.length > draggedItemIndex! + 1 &&
+          dy! >
+              bottomItemY! +
+                  listStates[draggedListIndex!]
+                          .itemStates[draggedItemIndex! + 1]
+                          .height /
+                      2) {
+        moveDown();
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
