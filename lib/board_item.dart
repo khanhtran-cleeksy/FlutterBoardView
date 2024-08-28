@@ -20,14 +20,14 @@ class BoardItem extends StatefulWidget {
   final OnStartDragItem? onStartDragItem;
   final bool draggable;
 
-  const BoardItem(
-      {Key? key,
-      this.boardList,
-      this.item,
-      this.index,
-      this.onStartDragItem,
-      this.draggable = true,})
-      : super(key: key);
+  const BoardItem({
+    Key? key,
+    this.boardList,
+    this.item,
+    this.index,
+    this.onStartDragItem,
+    this.draggable = true,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -87,9 +87,10 @@ class BoardItemState extends State<BoardItem>
         (reorderedItem as CustomDragDropItemWidget).data;
     final ListViewItemOrderParam newItem =
         (receiverItem as CustomDragDropItemWidget).data;
+    print(newItem.itemIndex);
     boardView.widget.onDropItem!(
       newItem.stageIndex,
-      max(0, newItem.itemIndex - 1),
+      newItem.itemIndex,
       oldItem.stageIndex,
       oldItem.itemIndex,
       this,
