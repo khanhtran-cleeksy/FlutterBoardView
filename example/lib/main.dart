@@ -38,10 +38,10 @@ class _BoardViewExampleState extends State<BoardViewExample>
     3,
     (index) => BoardListObject(
       title: "List title $index",
-      items: List.generate(index.isEven ? 10 : 2, (index) {
+      items: List.generate(index.isEven ? 10 : 0, (index) {
         return BoardItemObject(title: "Item ${index + 1}");
       }),
-      itemCount: index.isEven ? 30 : 2,
+      itemCount: index.isEven ? 14 : 0,
     ),
   );
 
@@ -92,6 +92,16 @@ class _BoardViewExampleState extends State<BoardViewExample>
             margin: 8,
             width: MediaQuery.of(context).size.width,
             boardViewController: boardViewController,
+            onDropItem: (int? listIndex, int? itemIndex, int? oldListIndex,
+                int? oldItemIndex, BoardItemState? state) {
+              setState(() {
+                _movable = false;
+              });
+              //Used to update our local item data
+              var item = _listData[oldListIndex!].items![oldItemIndex!];
+              _listData[listIndex!].items!.insert(itemIndex!, item);
+              _listData[oldListIndex].items!.removeAt(oldItemIndex);
+            },
           ),
         ),
       ),
@@ -105,18 +115,6 @@ class _BoardViewExampleState extends State<BoardViewExample>
           _movable = true;
         });
       },
-      onDropItem: (int? listIndex, int? itemIndex, int? oldListIndex,
-          int? oldItemIndex, BoardItemState? state) {
-        setState(() {
-          _movable = false;
-        });
-        //Used to update our local item data
-        var item = _listData[oldListIndex!].items![oldItemIndex!];
-        _listData[listIndex!].items!.insert(itemIndex!, item);
-        _listData[oldListIndex].items!.removeAt(oldItemIndex);
-      },
-      onTapItem:
-          (int? listIndex, int? itemIndex, BoardItemState? state) async {},
       item: Card(
         child: Container(
           height: 100,

@@ -31,6 +31,7 @@ class BoardList extends StatefulWidget {
   final Decoration? decoration;
   final EdgeInsets? padding;
   final bool draggable;
+  final bool isDraggingItem;
 
   const BoardList({
     Key? key,
@@ -52,6 +53,7 @@ class BoardList extends StatefulWidget {
     this.customWidget,
     this.immovableWidget,
     this.decoration,
+    this.isDraggingItem = false,
   }) : super(key: key);
 
   final int? index;
@@ -66,7 +68,6 @@ class BoardListState extends State<BoardList>
     with AutomaticKeepAliveClientMixin<BoardList> {
   List<BoardItemState> itemStates = [];
   ScrollController scrollController = new ScrollController();
-  bool isDraggingItem = false;
   final listKey = GlobalKey();
   Timer? _timer;
 
@@ -102,7 +103,7 @@ class BoardListState extends State<BoardList>
   void autoScrollDown() {
     if (_timer?.isActive == true) return;
     //
-    _cancelTimer();
+    cancelTimer();
     const timerDuration = Duration(milliseconds: 270);
     const scrollDuration = Duration(milliseconds: 250);
     _timer = Timer.periodic(timerDuration, (timer) {
@@ -114,7 +115,7 @@ class BoardListState extends State<BoardList>
           curve: Curves.linear,
         );
       } else {
-        _cancelTimer();
+        cancelTimer();
       }
     });
   }
@@ -122,7 +123,7 @@ class BoardListState extends State<BoardList>
   void autoScrollUp() {
     if (_timer?.isActive == true) return;
     //
-    _cancelTimer();
+    cancelTimer();
     const timerDuration = Duration(milliseconds: 270);
     const scrollDuration = Duration(milliseconds: 250);
     _timer = Timer.periodic(timerDuration, (timer) {
@@ -133,12 +134,12 @@ class BoardListState extends State<BoardList>
           curve: Curves.linear,
         );
       } else {
-        _cancelTimer();
+        cancelTimer();
       }
     });
   }
 
-  void _cancelTimer() {
+  void cancelTimer() {
     if (_timer?.isActive == true) {
       _timer?.cancel();
     }
@@ -207,20 +208,18 @@ class BoardListState extends State<BoardList>
                       children: widget.header!),
                 ),
               ),
-              if (widget.items != null)
-                Expanded(
-                  key: listKey,
-                  child: widget.movable
-                      ? _buildMovableList(boardView)
-                      : widget.immovableWidget ?? SizedBox(),
-                ),
+              Expanded(
+                key: listKey,
+                child: widget.movable
+                    ? _buildMovableList(boardView)
+                    : widget.immovableWidget ?? SizedBox(),
+              ),
             ],
           ),
         );
   }
 
   Widget _buildMovableList(BoardViewState boardView) {
-    if (widget.items!.isEmpty) return const SizedBox();
     //
     return CupertinoScrollbar(
       radius: const Radius.circular(10),
@@ -238,20 +237,18 @@ class BoardListState extends State<BoardList>
               left: widget.padding?.left ?? 0),
           physics: AlwaysScrollableScrollPhysics(),
           controller: scrollController,
-          itemCount:
-              isDraggingItem ? widget.items!.length + 1 : widget.items!.length,
+          itemCount: widget.isDraggingItem
+              ? widget.items!.length + 1
+              : widget.items!.length,
           itemBuilder: (ctx, index) {
-            if (isDraggingItem && index == widget.items!.length) {
-              var item = widget.items![index - 1];
+            if (widget.isDraggingItem && index == widget.items!.length) {
               return BoardItem(
                 boardList: this,
-                item: SizedBox(height: 120),
+                item: SizedBox(
+                  height: scrollController.position.viewportDimension - 150,
+                ),
                 draggable: false,
                 index: index,
-                onDropItem: item.onDropItem,
-                onTapItem: item.onTapItem,
-                onDragItem: item.onDragItem,
-                onStartDragItem: item.onStartDragItem,
               );
             }
             var item = widget.items![index];
@@ -260,35 +257,11 @@ class BoardListState extends State<BoardList>
               item: item.item,
               draggable: item.draggable,
               index: index,
-              onDropItem: item.onDropItem,
-              onTapItem: item.onTapItem,
-              onDragItem: item.onDragItem,
               onStartDragItem: item.onStartDragItem,
             );
           },
         ),
       ),
     );
-  }
-
-  void onItemPointerMove(PointerMoveEvent event) {
-    final box = listKey.currentContext!.findRenderObject() as RenderBox;
-    final listHeight = box.size.height;
-    final listDyOffset = box.localToGlobal(Offset.zero).dy;
-    final itemPos = event.position.dy - listDyOffset;
-    //
-    if (itemPos >= listHeight) {
-      return autoScrollDown();
-    }
-    if (itemPos < 0) {
-      return autoScrollUp();
-    }
-  }
-
-  void setIsDraggingItem(bool dragging) {
-    if (isDraggingItem != dragging) {
-      isDraggingItem = dragging;
-      setState(() {});
-    }
   }
 }

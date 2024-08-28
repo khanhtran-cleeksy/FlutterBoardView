@@ -1,5 +1,6 @@
 library boardview;
 
+import 'package:boardview/board_item.dart';
 import 'package:boardview/boardview_controller.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
@@ -14,7 +15,7 @@ class BoardView extends StatefulWidget {
   final double margin;
   final bool showBottomScrollBar;
   final BoardViewController? boardViewController;
-
+  final OnDropItem? onDropItem;
   BoardView({
     Key? key,
     this.showBottomScrollBar = true,
@@ -22,6 +23,7 @@ class BoardView extends StatefulWidget {
     required this.lists,
     this.width = 350,
     required this.margin,
+    required this.onDropItem,
   }) : super(key: key);
 
   @override
@@ -32,7 +34,9 @@ class BoardView extends StatefulWidget {
 
 typedef void OnDropBottomWidget(
     int? listIndex, int? itemIndex, double percentX);
-typedef void OnDropItem(int? listIndex, int? itemIndex);
+
+typedef void OnDropItem(int? listIndex, int? itemIndex, int? oldListIndex,
+    int? oldItemIndex, BoardItemState state);
 typedef void OnDropList(int? listIndex);
 
 class BoardViewState extends State<BoardView>
@@ -61,7 +65,6 @@ class BoardViewState extends State<BoardView>
 
   List<BoardListState> listStates = [];
 
-  OnDropItem? onDropItem;
   OnDropList? onDropList;
 
   var pointer;
@@ -231,6 +234,7 @@ class BoardViewState extends State<BoardView>
             customWidget: list.customWidget,
             decoration: list.decoration,
             padding: list.padding,
+            isDraggingItem: isDraggingItem,
           );
         }
         if (list.index != index) {
@@ -253,6 +257,7 @@ class BoardViewState extends State<BoardView>
             customWidget: list.customWidget,
             decoration: list.decoration,
             padding: list.padding,
+            isDraggingItem: isDraggingItem,
           );
         }
 
@@ -333,7 +338,6 @@ class BoardViewState extends State<BoardView>
           dx = null;
           dy = null;
           draggedListIndex = null;
-          onDropItem = null;
           onDropList = null;
           dxInit = null;
           dyInit = null;
@@ -380,10 +384,13 @@ class BoardViewState extends State<BoardView>
 
   bool isMovingToList = false;
 
+  BoardListState? targetList;
+  bool isDraggingItem = false;
+
   void onItemPointerMove(PointerMoveEvent event) {
     _moveToList(int page) {
-      isMovingToList = true;
       if (scrollController.hasClients) {
+        isMovingToList = true;
         _animateTo(page).whenComplete(() {
           _setCurrentPos();
           _setCurrentPage(page);
@@ -395,7 +402,6 @@ class BoardViewState extends State<BoardView>
       }
     }
 
-    //
     if (isMovingToList) return;
     //
     final listWidth = widget.width;
@@ -410,7 +416,6 @@ class BoardViewState extends State<BoardView>
       _moveToList(_previousPage);
     }
   }
-
 
   void _setCurrentPos() {
     if (!scrollController.hasClients) return;
@@ -483,5 +488,38 @@ class BoardViewState extends State<BoardView>
       dy = pointer.position.dy;
       _rebuild();
     }
+  }
+
+  void setTargetList(int stageIndex) {
+    targetList = listStates[stageIndex];
+  }
+
+  void onItemPointerMoveList(PointerMoveEvent event) {
+    if (targetList == null) return;
+    final box =
+        targetList!.listKey.currentContext!.findRenderObject() as RenderBox;
+    final listHeight = box.size.height;
+    final listDyOffset = box.localToGlobal(Offset.zero).dy;
+    final itemPos = event.position.dy - listDyOffset;
+    //
+    if (itemPos >= listHeight) {
+      return targetList!.autoScrollDown();
+    }
+    if (itemPos < 0) {
+      return targetList!.autoScrollUp();
+    }
+    targetList!.cancelTimer();
+  }
+
+  void setIsDraggingItem(bool dragging) {
+    if (isDraggingItem != dragging) {
+      isDraggingItem = dragging;
+      setState(() {});
+    }
+  }
+
+  void onItemPointerUp() {
+    if (targetList == null) return;
+    targetList!.cancelTimer();
   }
 }

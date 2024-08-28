@@ -1,13 +1,12 @@
 import 'dart:math';
 
 import 'package:boardview/board_list.dart';
+import 'package:boardview/boardview.dart';
 import 'package:boardview/custom_drag_drop_item.widget.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-typedef void OnDropItem(int? listIndex, int? itemIndex, int? oldListIndex,
-    int? oldItemIndex, BoardItemState state);
 typedef void OnTapItem(int? listIndex, int? itemIndex, BoardItemState state);
 typedef void OnStartDragItem(
     int? listIndex, int? itemIndex, BoardItemState state);
@@ -18,10 +17,7 @@ class BoardItem extends StatefulWidget {
   final BoardListState? boardList;
   final Widget? item;
   final int? index;
-  final OnDropItem? onDropItem;
-  final OnTapItem? onTapItem;
   final OnStartDragItem? onStartDragItem;
-  final OnDragItem? onDragItem;
   final bool draggable;
 
   const BoardItem(
@@ -29,11 +25,8 @@ class BoardItem extends StatefulWidget {
       this.boardList,
       this.item,
       this.index,
-      this.onDropItem,
-      this.onTapItem,
       this.onStartDragItem,
-      this.draggable = true,
-      this.onDragItem})
+      this.draggable = true,})
       : super(key: key);
 
   @override
@@ -44,6 +37,12 @@ class BoardItem extends StatefulWidget {
 
 class BoardItemState extends State<BoardItem>
     with AutomaticKeepAliveClientMixin<BoardItem> {
+  BoardListState get boardList => widget.boardList!;
+
+  BoardViewState get boardView => boardList.widget.boardView!;
+
+  List<BoardListState> get listStates => boardView.listStates;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -70,8 +69,14 @@ class BoardItemState extends State<BoardItem>
     return DragAndDropBuilderParameters(
       onItemReordered: _onItemReordered,
       onItemDraggingChanged: _onItemDraggingChanged,
+      itemOnWillAccept: (incoming, target) {
+        final ListViewItemOrderParam data =
+            (target as CustomDragDropItemWidget).data;
+        boardView.setTargetList(data.stageIndex);
+        return true;
+      },
       onPointerMove: _onPointerMove,
-      onPointerUp: (event) => _cancelTimer(),
+      onPointerUp: _onPointerUp,
       axis: Axis.horizontal,
     );
   }
@@ -82,7 +87,7 @@ class BoardItemState extends State<BoardItem>
         (reorderedItem as CustomDragDropItemWidget).data;
     final ListViewItemOrderParam newItem =
         (receiverItem as CustomDragDropItemWidget).data;
-    widget.onDropItem!(
+    boardView.widget.onDropItem!(
       newItem.stageIndex,
       max(0, newItem.itemIndex - 1),
       oldItem.stageIndex,
@@ -92,15 +97,12 @@ class BoardItemState extends State<BoardItem>
   }
 
   void _onPointerMove(PointerMoveEvent event) {
-    var boardList = widget.boardList;
-    var boardView = boardList!.widget.boardView;
-    boardView!.onItemPointerMove(event);
-    boardList.onItemPointerMove(event);
+    boardView.onItemPointerMove(event);
+    boardView.onItemPointerMoveList(event);
   }
 
   void _onItemDraggingChanged(DragAndDropItem item, bool dragging) {
-    var boardList = widget.boardList!;
-    boardList.setIsDraggingItem(dragging);
+    boardView.setIsDraggingItem(dragging);
     if (dragging)
       widget.onStartDragItem!(
         boardList.widget.index!,
@@ -109,10 +111,8 @@ class BoardItemState extends State<BoardItem>
       );
   }
 
-  void _cancelTimer() {
-    // if (_timer?.isActive == true) {
-    //   _timer?.cancel();
-    // }
+  void _onPointerUp(PointerUpEvent event) {
+    boardView.onItemPointerUp();
   }
 }
 
