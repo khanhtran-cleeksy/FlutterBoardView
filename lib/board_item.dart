@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:boardview/board_list.dart';
 import 'package:boardview/custom_drag_drop_item.widget.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
@@ -80,11 +82,9 @@ class BoardItemState extends State<BoardItem>
         (reorderedItem as CustomDragDropItemWidget).data;
     final ListViewItemOrderParam newItem =
         (receiverItem as CustomDragDropItemWidget).data;
-    print(oldItem);
-    print(newItem);
     widget.onDropItem!(
       newItem.stageIndex,
-      newItem.itemIndex,
+      max(0, newItem.itemIndex - 1),
       oldItem.stageIndex,
       oldItem.itemIndex,
       this,
@@ -101,7 +101,6 @@ class BoardItemState extends State<BoardItem>
   void _onItemDraggingChanged(DragAndDropItem item, bool dragging) {
     var boardList = widget.boardList;
     boardList!.setIsDraggingItem(dragging);
-
   }
 
   void _cancelTimer() {
