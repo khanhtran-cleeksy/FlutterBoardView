@@ -38,10 +38,10 @@ class _BoardViewExampleState extends State<BoardViewExample>
     3,
     (index) => BoardListObject(
       title: "List title $index",
-      items: List.generate(index.isEven ? 10 : 0, (index) {
+      items: List.generate(index.isEven ? 4 : 0, (index) {
         return BoardItemObject(title: "Item ${index + 1}");
       }),
-      itemCount: index.isEven ? 14 : 0,
+      itemCount: index.isEven ? 4 : 0,
     ),
   );
 

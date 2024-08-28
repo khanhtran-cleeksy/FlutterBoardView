@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:boardview/board_list.dart';
 import 'package:boardview/boardview.dart';
 import 'package:boardview/custom_drag_drop_item.widget.dart';
@@ -87,12 +85,18 @@ class BoardItemState extends State<BoardItem>
         (reorderedItem as CustomDragDropItemWidget).data;
     final ListViewItemOrderParam newItem =
         (receiverItem as CustomDragDropItemWidget).data;
-    print(newItem.itemIndex);
+    final newStageIndex = newItem.stageIndex;
+    var newItemIndex = newItem.itemIndex;
+    final oldStageIndex = oldItem.stageIndex;
+    final oldItemIndex = oldItem.itemIndex;
+    if (newStageIndex == oldStageIndex) {
+      newItemIndex--;
+    }
     boardView.widget.onDropItem!(
-      newItem.stageIndex,
-      newItem.itemIndex,
-      oldItem.stageIndex,
-      oldItem.itemIndex,
+      newStageIndex,
+      newItemIndex,
+      oldStageIndex,
+      oldItemIndex,
       this,
     );
   }
