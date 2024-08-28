@@ -99,8 +99,14 @@ class BoardItemState extends State<BoardItem>
   }
 
   void _onItemDraggingChanged(DragAndDropItem item, bool dragging) {
-    var boardList = widget.boardList;
-    boardList!.setIsDraggingItem(dragging);
+    var boardList = widget.boardList!;
+    boardList.setIsDraggingItem(dragging);
+    if (dragging)
+      widget.onStartDragItem!(
+        boardList.widget.index!,
+        widget.index!,
+        this,
+      );
   }
 
   void _cancelTimer() {
