@@ -16,6 +16,7 @@ class BoardView extends StatefulWidget {
   final bool showBottomScrollBar;
   final BoardViewController? boardViewController;
   final OnDropItem? onDropItem;
+
   BoardView({
     Key? key,
     this.showBottomScrollBar = true,
@@ -260,8 +261,41 @@ class BoardViewState extends State<BoardView>
             isDraggingItem: isDraggingItem,
           );
         }
-
-        var temp = Container(
+        // if (draggedListIndex == index && draggedItemIndex == null) {
+        //   return Container(
+        //     decoration: BoxDecoration(
+        //       color: Colors.grey.shade200,
+        //       borderRadius: BorderRadius.only(
+        //         topLeft: Radius.circular(8),
+        //         topRight: Radius.circular(8),
+        //       ),
+        //     ),
+        //     width: widget.width,
+        //     padding: EdgeInsets.fromLTRB(0, 0, 0, widget.bottomPadding ?? 0),
+        //     margin: EdgeInsets.fromLTRB(
+        //         index == 0
+        //             ? widget.margin != null
+        //             ? widget.margin! * 2
+        //             : 32
+        //             : widget.margin ?? 16,
+        //         0,
+        //         index == boardList.length - 1
+        //             ? widget.margin != null
+        //             ? widget.margin! * 2
+        //             : 32
+        //             : 0,
+        //         0),
+        //     child: Opacity(
+        //       opacity: 0.0,
+        //       child: temp,
+        //     ),
+        //   );
+        // } else {
+        //   return temp;
+        // }
+        var temp = Opacity(
+          opacity: draggedListIndex == index ? 0.4 : 1,
+          child: Container(
             width: width,
             margin: EdgeInsets.only(
               left: index == 0 ? widget.margin * 2 : widget.margin,
@@ -271,7 +305,9 @@ class BoardViewState extends State<BoardView>
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[Expanded(child: list)],
-            ));
+            ),
+          ),
+        );
         return temp;
       },
     );

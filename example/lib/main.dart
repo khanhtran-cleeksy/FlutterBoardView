@@ -166,6 +166,10 @@ class _BoardViewExampleState extends State<BoardViewExample>
       ],
       items: items,
       loadMore: list.itemCount != null && list.items!.length < list.itemCount!,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(18),
+      ),
     );
 
     // return BoardList(
