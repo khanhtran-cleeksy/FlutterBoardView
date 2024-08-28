@@ -53,8 +53,8 @@ class BoardItemState extends State<BoardItem>
       parameters: _dragAndDropItemParameters(),
       child: CustomDragDropItemWidget(
         canDrag: widget.draggable,
-        data: ListViewItemOrderParam(
-            stageIndex: boardList.widget.index!, itemIndex: widget.index!),
+        data: ItemOrderParam(
+            listIndex: boardList.widget.index!, itemIndex: widget.index!),
         child: SizedBox(
           width: double.infinity,
           child: widget.item!,
@@ -68,9 +68,8 @@ class BoardItemState extends State<BoardItem>
       onItemReordered: _onItemReordered,
       onItemDraggingChanged: _onItemDraggingChanged,
       itemOnWillAccept: (incoming, target) {
-        final ListViewItemOrderParam data =
-            (target as CustomDragDropItemWidget).data;
-        boardView.setTargetList(data.stageIndex);
+        final ItemOrderParam data = (target as CustomDragDropItemWidget).data;
+        boardView.setTargetList(data.listIndex);
         return true;
       },
       onPointerMove: _onPointerMove,
@@ -81,21 +80,21 @@ class BoardItemState extends State<BoardItem>
 
   void _onItemReordered(
       DragAndDropItem reorderedItem, DragAndDropItem receiverItem) {
-    final ListViewItemOrderParam oldItem =
+    final ItemOrderParam oldItem =
         (reorderedItem as CustomDragDropItemWidget).data;
-    final ListViewItemOrderParam newItem =
+    final ItemOrderParam newItem =
         (receiverItem as CustomDragDropItemWidget).data;
-    final newStageIndex = newItem.stageIndex;
+    final newListIndex = newItem.listIndex;
     var newItemIndex = newItem.itemIndex;
-    final oldStageIndex = oldItem.stageIndex;
+    final oldListIndex = oldItem.listIndex;
     final oldItemIndex = oldItem.itemIndex;
-    if (newStageIndex == oldStageIndex) {
+    if (newListIndex == oldListIndex && newItemIndex != oldItemIndex) {
       newItemIndex--;
     }
     boardView.widget.onDropItem!(
-      newStageIndex,
+      newListIndex,
       newItemIndex,
-      oldStageIndex,
+      oldListIndex,
       oldItemIndex,
       this,
     );
@@ -121,17 +120,17 @@ class BoardItemState extends State<BoardItem>
   }
 }
 
-class ListViewItemOrderParam {
-  final int stageIndex;
+class ItemOrderParam {
+  final int listIndex;
   int itemIndex;
 
-  ListViewItemOrderParam({
-    required this.stageIndex,
+  ItemOrderParam({
+    required this.listIndex,
     required this.itemIndex,
   });
 
   @override
   String toString() {
-    return "{stageIndex: $stageIndex, itemIndex: $itemIndex}";
+    return "{stageIndex: $listIndex, itemIndex: $itemIndex}";
   }
 }
