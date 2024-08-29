@@ -1,5 +1,7 @@
 library boardview;
 
+import 'dart:math';
+
 import 'package:boardview/board_item.dart';
 import 'package:boardview/boardview_controller.dart';
 import 'package:flutter/material.dart';
@@ -33,16 +35,13 @@ class BoardView extends StatefulWidget {
   }
 }
 
-typedef void OnDropBottomWidget(
-    int? listIndex, int? itemIndex, double percentX);
-
 typedef void OnDropItem(int? listIndex, int? itemIndex, int? oldListIndex,
     int? oldItemIndex, BoardItemState state);
 typedef void OnDropList(int? listIndex);
 
 class BoardViewState extends State<BoardView>
     with AutomaticKeepAliveClientMixin<BoardView> {
-  Widget? draggedItem;
+  Widget? draggedListItem;
   int? draggedListIndex;
   double? dx;
   double? dxInit;
@@ -54,11 +53,8 @@ class BoardViewState extends State<BoardView>
   double? initialY = 0;
   double? rightListX;
   double? leftListX;
-  double? topListY;
-  double? bottomListY;
   double? height;
   int? startListIndex;
-  int? startItemIndex;
 
   bool canDrag = true;
 
@@ -164,7 +160,7 @@ class BoardViewState extends State<BoardView>
     _rebuild();
   }
 
-  int get _previousPage => currentPage > 0 ? currentPage - 1 : currentPage;
+  int get _previousPage => max(0, currentPage - 1);
 
   int get _nextPage => currentPage + 1;
 
@@ -216,84 +212,28 @@ class BoardViewState extends State<BoardView>
       controller: scrollController,
       itemBuilder: (BuildContext context, int index) {
         var list = lists[index];
-        if (list.boardView == null) {
-          list = BoardList(
-            items: list.items,
-            loadMore: list.loadMore,
-            headerBackgroundColor: list.headerBackgroundColor,
-            backgroundColor: list.backgroundColor,
-            footer: list.footer,
-            header: list.header,
-            boardView: this,
-            movable: list.movable,
-            draggable: list.draggable,
-            onDropList: list.onDropList,
-            onTapList: list.onTapList,
-            immovableWidget: list.immovableWidget,
-            onStartDragList: list.onStartDragList,
-            onLoadMore: list.onLoadMore,
-            customWidget: list.customWidget,
-            decoration: list.decoration,
-            padding: list.padding,
-            isDraggingItem: isDraggingItem,
-          );
-        }
-        if (list.index != index) {
-          list = BoardList(
-            items: list.items,
-            loadMore: list.loadMore,
-            headerBackgroundColor: list.headerBackgroundColor,
-            backgroundColor: list.backgroundColor,
-            footer: list.footer,
-            header: list.header,
-            movable: list.movable,
-            immovableWidget: list.immovableWidget,
-            boardView: this,
-            draggable: list.draggable,
-            index: index,
-            onDropList: list.onDropList,
-            onTapList: list.onTapList,
-            onStartDragList: list.onStartDragList,
-            onLoadMore: list.onLoadMore,
-            customWidget: list.customWidget,
-            decoration: list.decoration,
-            padding: list.padding,
-            isDraggingItem: isDraggingItem,
-          );
-        }
-        // if (draggedListIndex == index && draggedItemIndex == null) {
-        //   return Container(
-        //     decoration: BoxDecoration(
-        //       color: Colors.grey.shade200,
-        //       borderRadius: BorderRadius.only(
-        //         topLeft: Radius.circular(8),
-        //         topRight: Radius.circular(8),
-        //       ),
-        //     ),
-        //     width: widget.width,
-        //     padding: EdgeInsets.fromLTRB(0, 0, 0, widget.bottomPadding ?? 0),
-        //     margin: EdgeInsets.fromLTRB(
-        //         index == 0
-        //             ? widget.margin != null
-        //             ? widget.margin! * 2
-        //             : 32
-        //             : widget.margin ?? 16,
-        //         0,
-        //         index == boardList.length - 1
-        //             ? widget.margin != null
-        //             ? widget.margin! * 2
-        //             : 32
-        //             : 0,
-        //         0),
-        //     child: Opacity(
-        //       opacity: 0.0,
-        //       child: temp,
-        //     ),
-        //   );
-        // } else {
-        //   return temp;
-        // }
-        var temp = Opacity(
+        list = BoardList(
+          items: list.items,
+          loadMore: list.loadMore,
+          headerBackgroundColor: list.headerBackgroundColor,
+          backgroundColor: list.backgroundColor,
+          footer: list.footer,
+          header: list.header,
+          movable: list.movable,
+          immovableWidget: list.immovableWidget,
+          boardView: this,
+          draggable: list.draggable,
+          index: index,
+          onDropList: list.onDropList,
+          onTapList: list.onTapList,
+          onStartDragList: list.onStartDragList,
+          onLoadMore: list.onLoadMore,
+          customWidget: list.customWidget,
+          decoration: list.decoration,
+          padding: list.padding,
+          isDraggingItem: isDraggingItem,
+        );
+        return Opacity(
           opacity: draggedListIndex == index ? 0.4 : 1,
           child: Container(
             width: width,
@@ -308,7 +248,6 @@ class BoardViewState extends State<BoardView>
             ),
           ),
         );
-        return temp;
       },
     );
 
@@ -330,7 +269,7 @@ class BoardViewState extends State<BoardView>
       stackWidgets.add(Positioned(
         width: width,
         height: height,
-        child: draggedItem!,
+        child: draggedListItem!,
         left: (dx! - offsetX!) + initialX!,
         top: (dy! - offsetY!) + initialY!,
       ));
@@ -341,7 +280,7 @@ class BoardViewState extends State<BoardView>
       key: boardKey,
       child: Listener(
         onPointerMove: (opm) {
-          if (draggedItem != null) {
+          if (draggedListItem != null) {
             if (dxInit == null) {
               dxInit = opm.position.dx;
             }
@@ -366,7 +305,7 @@ class BoardViewState extends State<BoardView>
             int? tempDraggedListIndex = draggedListIndex;
             onDropList!(tempDraggedListIndex);
           }
-          draggedItem = null;
+          draggedListItem = null;
           offsetX = null;
           offsetY = null;
           initialX = null;
@@ -379,10 +318,7 @@ class BoardViewState extends State<BoardView>
           dyInit = null;
           leftListX = null;
           rightListX = null;
-          topListY = null;
-          bottomListY = null;
           startListIndex = null;
-          startItemIndex = null;
           _rebuild();
         },
         child: Column(

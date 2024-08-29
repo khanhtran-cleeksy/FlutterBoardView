@@ -13,6 +13,9 @@ typedef void OnTapList(int? listIndex);
 typedef void OnStartDragList(int? listIndex);
 typedef Future<bool> FutureCallBack(int listIndex);
 
+const timerDuration = Duration(milliseconds: 270);
+const scrollDuration = Duration(milliseconds: 250);
+
 class BoardList extends StatefulWidget {
   final List<Widget>? header;
   final Widget? customWidget;
@@ -91,7 +94,7 @@ class BoardListState extends State<BoardList>
       boardView.startListIndex = widget.index;
       boardView.height = context.size!.height;
       boardView.draggedListIndex = widget.index!;
-      boardView.draggedItem = item;
+      boardView.draggedListItem = item;
       boardView.onDropList = onDropList;
       boardView.run();
       if (boardView.mounted) {
@@ -104,8 +107,6 @@ class BoardListState extends State<BoardList>
     if (_timer?.isActive == true) return;
     //
     cancelTimer();
-    const timerDuration = Duration(milliseconds: 270);
-    const scrollDuration = Duration(milliseconds: 250);
     _timer = Timer.periodic(timerDuration, (timer) {
       if (scrollController.offset <
           scrollController.position.maxScrollExtent - 15) {
@@ -124,8 +125,6 @@ class BoardListState extends State<BoardList>
     if (_timer?.isActive == true) return;
     //
     cancelTimer();
-    const timerDuration = Duration(milliseconds: 270);
-    const scrollDuration = Duration(milliseconds: 250);
     _timer = Timer.periodic(timerDuration, (timer) {
       if (scrollController.offset > scrollController.position.minScrollExtent) {
         scrollController.animateTo(
@@ -220,7 +219,9 @@ class BoardListState extends State<BoardList>
   }
 
   Widget _buildMovableList(BoardViewState boardView) {
-    //
+    var length = widget.items!.length;
+    //if isDraggingItem, +1 to add last ghost item
+    final itemCount = widget.isDraggingItem ? length + 1 : length;
     return CupertinoScrollbar(
       radius: const Radius.circular(10),
       controller: scrollController,
@@ -237,11 +238,10 @@ class BoardListState extends State<BoardList>
               left: widget.padding?.left ?? 0),
           physics: AlwaysScrollableScrollPhysics(),
           controller: scrollController,
-          itemCount: widget.isDraggingItem
-              ? widget.items!.length + 1
-              : widget.items!.length,
+          itemCount: itemCount,
           itemBuilder: (ctx, index) {
-            if (widget.isDraggingItem && index == widget.items!.length) {
+            if (widget.isDraggingItem && index == length) {
+              //Build ghost item for drag/drop to last of list
               return BoardItem(
                 boardList: this,
                 item: SizedBox(
@@ -251,6 +251,7 @@ class BoardListState extends State<BoardList>
                 index: index,
               );
             }
+            //
             var item = widget.items![index];
             return BoardItem(
               boardList: this,
