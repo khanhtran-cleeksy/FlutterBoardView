@@ -1,4 +1,4 @@
-import 'BoardItemObject.dart';
+import 'package:example/BoardItemObject.dart';
 
 class BoardListObject {
   String? title;
@@ -6,14 +6,8 @@ class BoardListObject {
   int? itemCount;
 
   BoardListObject({this.title, this.items, this.itemCount}) {
-    if (this.title == null) {
-      this.title = "";
-    }
-    if (this.items == null) {
-      this.items = [];
-    }
-    if (this.itemCount == null) {
-      this.itemCount = 0;
-    }
+    title ??= "";
+    items ??= [];
+    itemCount ??= 0;
   }
 }

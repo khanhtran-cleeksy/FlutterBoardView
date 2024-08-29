@@ -5,11 +5,11 @@ import 'package:flutter/cupertino.dart';
 /// return true is refresh success
 ///
 /// return false or null is fail
-typedef Future<bool> FutureCallBack();
+typedef FutureCallBack = Future<bool> Function();
 
 class LoadMore extends StatefulWidget {
   static DelegateBuilder<LoadMoreDelegate> buildDelegate =
-      () => DefaultLoadMoreDelegate();
+      () => const DefaultLoadMoreDelegate();
   static DelegateBuilder<LoadMoreTextBuilder> buildTextBuilder =
       () => DefaultLoadMoreTextBuilder.english;
 
@@ -34,14 +34,14 @@ class LoadMore extends StatefulWidget {
   final bool whenEmptyLoad;
 
   const LoadMore({
-    Key? key,
+    super.key,
     required this.child,
     required this.onLoadMore,
     this.textBuilder,
     this.isFinish = false,
     this.delegate,
     this.whenEmptyLoad = true,
-  }) : super(key: key);
+  });
 
   @override
   _LoadMoreState createState() => _LoadMoreState();
@@ -77,21 +77,21 @@ class _LoadMoreState extends State<LoadMore> {
   /// if call the method, then the future is not null
   /// so, return a listview and  item count + 1
   Widget? _buildListView(ListView listView) {
-    var delegate = listView.childrenDelegate;
+    final delegate = listView.childrenDelegate;
     outer:
     if (delegate is SliverChildBuilderDelegate) {
-      SliverChildBuilderDelegate delegate =
+      final SliverChildBuilderDelegate delegate =
           listView.childrenDelegate as SliverChildBuilderDelegate;
       if (!widget.whenEmptyLoad && delegate.estimatedChildCount == 0) {
         break outer;
       }
-      var viewCount = (delegate.estimatedChildCount ?? 0) + 1;
-      IndexedWidgetBuilder builder = (context, index) {
+      final viewCount = (delegate.estimatedChildCount ?? 0) + 1;
+      builder(context, index) {
         if (index == viewCount - 1) {
           return _buildLoadMoreView();
         }
         return delegate.builder(context, index) ?? Container();
-      };
+      }
 
       return ListView.builder(
         itemBuilder: builder,
@@ -113,7 +113,7 @@ class _LoadMoreState extends State<LoadMore> {
         shrinkWrap: listView.shrinkWrap,
       );
     } else if (delegate is SliverChildListDelegate) {
-      SliverChildListDelegate delegate =
+      final SliverChildListDelegate delegate =
           listView.childrenDelegate as SliverChildListDelegate;
 
       if (!widget.whenEmptyLoad && delegate.estimatedChildCount == 0) {
@@ -158,12 +158,12 @@ class _LoadMoreState extends State<LoadMore> {
         break outer;
       }
       final viewCount = (delegate.estimatedChildCount ?? 0) + 1;
-      IndexedWidgetBuilder builder = (context, index) {
+      builder(context, index) {
         if (index == viewCount - 1) {
           return _buildLoadMoreView();
         }
         return delegate.builder(context, index) ?? Container();
-      };
+      }
 
       return SliverList(
         delegate: SliverChildBuilderDelegate(
@@ -202,11 +202,11 @@ class _LoadMoreState extends State<LoadMore> {
   LoadMoreStatus status = LoadMoreStatus.idle;
 
   Widget _buildLoadMoreView() {
-    if (widget.isFinish == true) {
-      this.status = LoadMoreStatus.nomore;
+    if (widget.isFinish) {
+      status = LoadMoreStatus.nomore;
     } else {
-      if (this.status == LoadMoreStatus.nomore) {
-        this.status = LoadMoreStatus.idle;
+      if (status == LoadMoreStatus.nomore) {
+        status = LoadMoreStatus.idle;
       }
     }
     return NotificationListener<_RetryNotify>(
@@ -250,7 +250,7 @@ class _LoadMoreState extends State<LoadMore> {
   void loadMore() {
     _updateStatus(LoadMoreStatus.loading);
     widget.onLoadMore().then((v) {
-      if (v == true) {
+      if (v) {
         _updateStatus(LoadMoreStatus.idle);
       } else {
         _updateStatus(LoadMoreStatus.fail);
@@ -279,11 +279,11 @@ class DefaultLoadMoreView extends StatefulWidget {
   final LoadMoreTextBuilder textBuilder;
 
   const DefaultLoadMoreView({
-    Key? key,
+    super.key,
     this.status = LoadMoreStatus.idle,
     required this.delegate,
     required this.textBuilder,
-  }) : super(key: key);
+  });
 
   @override
   DefaultLoadMoreViewState createState() => DefaultLoadMoreViewState();
@@ -317,7 +317,7 @@ class DefaultLoadMoreViewState extends State<DefaultLoadMoreView> {
   }
 
   void notify() async {
-    var delay = max(delegate.loadMoreDelay(), Duration(milliseconds: 16));
+    final delay = max(delegate.loadMoreDelay(), const Duration(milliseconds: 16));
     await Future.delayed(delay);
     if (widget.status == LoadMoreStatus.idle && mounted) {
       _BuildNotify().dispatch(context);
@@ -336,17 +336,17 @@ class _BuildNotify extends Notification {}
 
 class _RetryNotify extends Notification {}
 
-typedef T DelegateBuilder<T>();
+typedef DelegateBuilder<T> = T Function();
 
 /// loadmore widget properties
 abstract class LoadMoreDelegate {
   static DelegateBuilder<LoadMoreDelegate> buildWidget =
-      () => DefaultLoadMoreDelegate();
+      () => const DefaultLoadMoreDelegate();
 
   const LoadMoreDelegate();
 
   /// build loadmore delay
-  Duration loadMoreDelay() => Duration(milliseconds: _loadMoreDelay);
+  Duration loadMoreDelay() => const Duration(milliseconds: _loadMoreDelay);
 
   Widget buildChild(LoadMoreStatus status,
       {LoadMoreTextBuilder builder = DefaultLoadMoreTextBuilder.english});
@@ -358,7 +358,7 @@ class DefaultLoadMoreDelegate extends LoadMoreDelegate {
   @override
   Widget buildChild(LoadMoreStatus status,
       {LoadMoreTextBuilder builder = DefaultLoadMoreTextBuilder.english}) {
-    String text = builder(status);
+    final String text = builder(status);
     if (status == LoadMoreStatus.fail) {
       return Container(
         child: Text(text),
@@ -374,7 +374,7 @@ class DefaultLoadMoreDelegate extends LoadMoreDelegate {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            CupertinoActivityIndicator(),
+            const CupertinoActivityIndicator(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(text),
@@ -391,7 +391,7 @@ class DefaultLoadMoreDelegate extends LoadMoreDelegate {
   }
 }
 
-typedef String LoadMoreTextBuilder(LoadMoreStatus status);
+typedef LoadMoreTextBuilder = String Function(LoadMoreStatus status);
 
 String _buildEnglishText(LoadMoreStatus status) {
   String text;

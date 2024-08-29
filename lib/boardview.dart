@@ -19,15 +19,15 @@ class BoardView extends StatefulWidget {
   final BoardViewController? boardViewController;
   final OnDropItem? onDropItem;
 
-  BoardView({
-    Key? key,
+  const BoardView({
+    super.key,
     this.showBottomScrollBar = true,
     this.boardViewController,
     required this.lists,
     this.width = 350,
     required this.margin,
     required this.onDropItem,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -35,9 +35,9 @@ class BoardView extends StatefulWidget {
   }
 }
 
-typedef void OnDropItem(int? listIndex, int? itemIndex, int? oldListIndex,
+typedef OnDropItem = void Function(int? listIndex, int? itemIndex, int? oldListIndex,
     int? oldItemIndex, BoardItemState state);
-typedef void OnDropList(int? listIndex);
+typedef OnDropList = void Function(int? listIndex);
 
 class BoardViewState extends State<BoardView>
     with AutomaticKeepAliveClientMixin<BoardView> {
@@ -58,13 +58,13 @@ class BoardViewState extends State<BoardView>
 
   bool canDrag = true;
 
-  ScrollController scrollController = new ScrollController();
+  ScrollController scrollController = ScrollController();
 
   List<BoardListState> listStates = [];
 
   OnDropList? onDropList;
 
-  var pointer;
+  PointerDownEvent? pointer;
 
   List<BoardList> get lists => widget.lists;
   AutoScrollController scrollBarController = AutoScrollController();
@@ -85,8 +85,8 @@ class BoardViewState extends State<BoardView>
   }
 
   void moveListRight() {
-    var list = lists[draggedListIndex!];
-    var listState = listStates[draggedListIndex!];
+    final list = lists[draggedListIndex!];
+    final listState = listStates[draggedListIndex!];
     lists.removeAt(draggedListIndex!);
     listStates.removeAt(draggedListIndex!);
     if (draggedListIndex != null) {
@@ -96,13 +96,13 @@ class BoardViewState extends State<BoardView>
     listStates.insert(draggedListIndex!, listState);
     canDrag = false;
     if (scrollController.hasClients) {
-      int? tempListIndex = draggedListIndex;
+      final int? tempListIndex = draggedListIndex;
       _animateTo(_nextPage).whenComplete(() {
         _setCurrentPos();
         _setCurrentPage(_nextPage);
         _rebuild();
-        RenderBox object = _findListStateRenderObject(tempListIndex!);
-        Offset pos = object.localToGlobal(Offset.zero);
+        final RenderBox object = _findListStateRenderObject(tempListIndex!);
+        final Offset pos = object.localToGlobal(Offset.zero);
         leftListX = pos.dx;
         rightListX = pos.dx + object.size.width;
         _resetCanDrag();
@@ -124,18 +124,18 @@ class BoardViewState extends State<BoardView>
 
   Future<void> _animateTo(int currentIndex) {
     return scrollController.animateTo(currentIndex * (width + widget.margin),
-        duration: new Duration(milliseconds: 400), curve: Curves.ease);
+        duration: const Duration(milliseconds: 400), curve: Curves.ease);
   }
 
   void _resetCanDrag() async {
-    Future.delayed(Duration(milliseconds: 600), () {
+    Future.delayed(const Duration(milliseconds: 600), () {
       canDrag = true;
     });
   }
 
   void moveListLeft() {
-    var list = lists[draggedListIndex!];
-    var listState = listStates[draggedListIndex!];
+    final list = lists[draggedListIndex!];
+    final listState = listStates[draggedListIndex!];
     lists.removeAt(draggedListIndex!);
     listStates.removeAt(draggedListIndex!);
     if (draggedListIndex != null) {
@@ -145,13 +145,13 @@ class BoardViewState extends State<BoardView>
     listStates.insert(draggedListIndex!, listState);
     canDrag = false;
     if (scrollController.hasClients && currentPage > 0) {
-      int? tempListIndex = draggedListIndex;
+      final int? tempListIndex = draggedListIndex;
       _animateTo(_previousPage).whenComplete(() {
         _setCurrentPos();
         _setCurrentPage(_previousPage);
         _rebuild();
-        RenderBox object = _findListStateRenderObject(tempListIndex!);
-        Offset pos = object.localToGlobal(Offset.zero);
+        final RenderBox object = _findListStateRenderObject(tempListIndex!);
+        final Offset pos = object.localToGlobal(Offset.zero);
         leftListX = pos.dx;
         rightListX = pos.dx + object.size.width;
         _resetCanDrag();
@@ -204,11 +204,10 @@ class BoardViewState extends State<BoardView>
         }
       } catch (e) {}
     });
-    Widget listWidget = ListView.builder(
-      physics: ClampingScrollPhysics(),
+    final Widget listWidget = ListView.builder(
+      physics: const ClampingScrollPhysics(),
       itemCount: lists.length,
       scrollDirection: Axis.horizontal,
-      addAutomaticKeepAlives: true,
       controller: scrollController,
       itemBuilder: (BuildContext context, int index) {
         var list = lists[index];
@@ -243,7 +242,6 @@ class BoardViewState extends State<BoardView>
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[Expanded(child: list)],
             ),
           ),
@@ -251,7 +249,7 @@ class BoardViewState extends State<BoardView>
       },
     );
 
-    List<Widget> stackWidgets = <Widget>[listWidget];
+    final List<Widget> stackWidgets = <Widget>[listWidget];
 
     if (initialX != null &&
         initialY != null &&
@@ -281,20 +279,16 @@ class BoardViewState extends State<BoardView>
       child: Listener(
         onPointerMove: (opm) {
           if (draggedListItem != null) {
-            if (dxInit == null) {
-              dxInit = opm.position.dx;
-            }
-            if (dyInit == null) {
-              dyInit = opm.position.dy;
-            }
+            dxInit ??= opm.position.dx;
+            dyInit ??= opm.position.dy;
             dx = opm.position.dx;
             dy = opm.position.dy;
             _rebuild();
           }
         },
         onPointerDown: (opd) {
-          RenderBox box = context.findRenderObject() as RenderBox;
-          Offset pos = box.localToGlobal(opd.position);
+          final RenderBox box = context.findRenderObject() as RenderBox;
+          final Offset pos = box.localToGlobal(opd.position);
           offsetX = pos.dx;
           offsetY = pos.dy;
           pointer = opd;
@@ -302,7 +296,7 @@ class BoardViewState extends State<BoardView>
         },
         onPointerUp: (opu) {
           if (onDropList != null) {
-            int? tempDraggedListIndex = draggedListIndex;
+            final int? tempDraggedListIndex = draggedListIndex;
             onDropList!(tempDraggedListIndex);
           }
           draggedListItem = null;
@@ -367,7 +361,7 @@ class BoardViewState extends State<BoardView>
           _setCurrentPos();
           _setCurrentPage(page);
           _rebuild();
-          Future.delayed(Duration(milliseconds: 500)).then(
+          Future.delayed(const Duration(milliseconds: 500)).then(
             (value) => isMovingToList = false,
           );
         });
@@ -403,12 +397,12 @@ class BoardViewState extends State<BoardView>
         lists.length - lists.where((e) => e.customWidget != null).length;
     final barLength = length > 5 ? 5 : length;
 
-    final itemSize = 11.0;
+    const itemSize = 11.0;
     return SizedBox(
       height: 30,
       width: itemSize * barLength,
       child: ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         controller: scrollBarController,
         scrollDirection: Axis.horizontal,
         itemCount: length,
@@ -424,9 +418,9 @@ class BoardViewState extends State<BoardView>
               width: itemSize,
               alignment: Alignment.center,
               child: AnimatedContainer(
-                duration: Duration(milliseconds: 150),
+                duration: const Duration(milliseconds: 150),
                 decoration: BoxDecoration(
-                  color: isHighlight ? Color(0xFFA3AABB) : Color(0xFFD7DBE4),
+                  color: isHighlight ? const Color(0xFFA3AABB) : const Color(0xFFD7DBE4),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 height: dotSize,
@@ -456,8 +450,8 @@ class BoardViewState extends State<BoardView>
 
   void run() {
     if (pointer != null) {
-      dx = pointer.position.dx;
-      dy = pointer.position.dy;
+      dx = pointer!.position.dx;
+      dy = pointer!.position.dy;
       _rebuild();
     }
   }

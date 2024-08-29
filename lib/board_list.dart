@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 
-import 'board_item.dart';
-import 'boardview.dart';
-import 'loadmore.dart';
+import 'package:boardview/board_item.dart';
+import 'package:boardview/boardview.dart';
+import 'package:boardview/loadmore.dart';
 
 const triggerScrollVertical = 100.0;
 
-typedef void OnDropList(int? listIndex, int? oldListIndex);
-typedef void OnTapList(int? listIndex);
-typedef void OnStartDragList(int? listIndex);
-typedef Future<bool> FutureCallBack(int listIndex);
+typedef OnDropList = void Function(int? listIndex, int? oldListIndex);
+typedef OnTapList = void Function(int? listIndex);
+typedef OnStartDragList = void Function(int? listIndex);
+typedef FutureCallBack = Future<bool> Function(int listIndex);
 
 const timerDuration = Duration(milliseconds: 270);
 const scrollDuration = Duration(milliseconds: 250);
@@ -37,7 +37,7 @@ class BoardList extends StatefulWidget {
   final bool isDraggingItem;
 
   const BoardList({
-    Key? key,
+    super.key,
     this.header,
     this.items,
     this.loadMore = false,
@@ -57,7 +57,7 @@ class BoardList extends StatefulWidget {
     this.immovableWidget,
     this.decoration,
     this.isDraggingItem = false,
-  }) : super(key: key);
+  });
 
   final int? index;
 
@@ -70,15 +70,13 @@ class BoardList extends StatefulWidget {
 class BoardListState extends State<BoardList>
     with AutomaticKeepAliveClientMixin<BoardList> {
   List<BoardItemState> itemStates = [];
-  ScrollController scrollController = new ScrollController();
+  ScrollController scrollController = ScrollController();
   final listKey = GlobalKey();
   Timer? _timer;
 
   void onDropList(int? listIndex) {
-    var boardView = widget.boardView;
-    if (widget.onDropList != null) {
-      widget.onDropList!(listIndex, boardView!.startListIndex);
-    }
+    final boardView = widget.boardView;
+    widget.onDropList?.call(listIndex, boardView!.startListIndex);
     boardView!.draggedListIndex = null;
     if (boardView.mounted) {
       boardView.setState(() {});
@@ -86,14 +84,12 @@ class BoardListState extends State<BoardList>
   }
 
   void _startDrag(Widget item, BuildContext context) {
-    var boardView = widget.boardView;
+    final boardView = widget.boardView;
     if (boardView != null && widget.draggable) {
-      if (widget.onStartDragList != null) {
-        widget.onStartDragList!(widget.index);
-      }
+      widget.onStartDragList?.call(widget.index);
       boardView.startListIndex = widget.index;
       boardView.height = context.size!.height;
-      boardView.draggedListIndex = widget.index!;
+      boardView.draggedListIndex = widget.index;
       boardView.draggedListItem = item;
       boardView.onDropList = onDropList;
       boardView.run();
@@ -150,12 +146,12 @@ class BoardListState extends State<BoardList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    Color? backgroundColor = Color.fromARGB(255, 255, 255, 255);
+    Color? backgroundColor = const Color.fromARGB(255, 255, 255, 255);
 
     if (widget.backgroundColor != null) {
       backgroundColor = widget.backgroundColor;
     }
-    var boardView = widget.boardView;
+    final boardView = widget.boardView;
     if (boardView!.listStates.length > widget.index!) {
       boardView.listStates.removeAt(widget.index!);
     }
@@ -169,20 +165,14 @@ class BoardListState extends State<BoardList>
           decoration:
               widget.decoration ?? BoxDecoration(color: backgroundColor),
           child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
             // children: listWidgets as List<Widget>,
             children: [
               GestureDetector(
-                onTap: () {
-                  if (widget.onTapList != null) {
-                    widget.onTapList!(widget.index);
-                  }
-                },
+                onTap: () => widget.onTapList?.call(widget.index),
                 onTapDown: (otd) {
                   if (widget.draggable) {
-                    RenderBox object = context.findRenderObject() as RenderBox;
-                    Offset pos = object.localToGlobal(Offset.zero);
+                    final RenderBox object = context.findRenderObject() as RenderBox;
+                    final Offset pos = object.localToGlobal(Offset.zero);
                     boardView.initialX = pos.dx;
                     boardView.initialY = pos.dy;
 
@@ -202,7 +192,6 @@ class BoardListState extends State<BoardList>
                       right: widget.padding?.right ?? 0,
                       left: widget.padding?.left ?? 0),
                   child: Row(
-                      mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: widget.header!),
                 ),
@@ -211,7 +200,7 @@ class BoardListState extends State<BoardList>
                 key: listKey,
                 child: widget.movable
                     ? _buildMovableList(boardView)
-                    : widget.immovableWidget ?? SizedBox(),
+                    : widget.immovableWidget ?? const SizedBox(),
               ),
             ],
           ),
@@ -219,7 +208,7 @@ class BoardListState extends State<BoardList>
   }
 
   Widget _buildMovableList(BoardViewState boardView) {
-    var length = widget.items!.length;
+    final length = widget.items!.length;
     //if isDraggingItem, +1 to add last ghost item
     final itemCount = widget.isDraggingItem ? length + 1 : length;
     return CupertinoScrollbar(
@@ -231,12 +220,10 @@ class BoardListState extends State<BoardList>
           return widget.onLoadMore!(widget.index!);
         },
         child: ListView.builder(
-          shrinkWrap: false,
-          addAutomaticKeepAlives: true,
           padding: EdgeInsets.only(
               right: widget.padding?.right ?? 0,
               left: widget.padding?.left ?? 0),
-          physics: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           controller: scrollController,
           itemCount: itemCount,
           itemBuilder: (ctx, index) {
@@ -252,7 +239,7 @@ class BoardListState extends State<BoardList>
               );
             }
             //
-            var item = widget.items![index];
+            final item = widget.items![index];
             return BoardItem(
               boardList: this,
               item: item.item,

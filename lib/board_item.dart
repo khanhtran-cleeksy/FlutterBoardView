@@ -5,10 +5,10 @@ import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-typedef void OnTapItem(int? listIndex, int? itemIndex, BoardItemState state);
-typedef void OnStartDragItem(
+typedef OnTapItem = void Function(int? listIndex, int? itemIndex, BoardItemState state);
+typedef OnStartDragItem = void Function(
     int? listIndex, int? itemIndex, BoardItemState state);
-typedef void OnDragItem(int oldListIndex, int oldItemIndex, int newListIndex,
+typedef OnDragItem = void Function(int oldListIndex, int oldItemIndex, int newListIndex,
     int newItemIndex, BoardItemState state);
 
 class BoardItem extends StatefulWidget {
@@ -19,13 +19,13 @@ class BoardItem extends StatefulWidget {
   final bool draggable;
 
   const BoardItem({
-    Key? key,
+    super.key,
     this.boardList,
     this.item,
     this.index,
     this.onStartDragItem,
     this.draggable = true,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -47,7 +47,7 @@ class BoardItemState extends State<BoardItem>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    var boardList = widget.boardList!;
+    final boardList = widget.boardList!;
 
     return DragAndDropItemWrapper(
       parameters: _dragAndDropItemParameters(),
@@ -57,7 +57,7 @@ class BoardItemState extends State<BoardItem>
             listIndex: boardList.widget.index!, itemIndex: widget.index!),
         child: SizedBox(
           width: double.infinity,
-          child: widget.item!,
+          child: widget.item,
         ),
       ),
     );
@@ -111,8 +111,8 @@ class BoardItemState extends State<BoardItem>
     boardView.setIsDraggingItem(dragging);
     if (dragging)
       widget.onStartDragItem!(
-        boardList.widget.index!,
-        widget.index!,
+        boardList.widget.index,
+        widget.index,
         this,
       );
   }

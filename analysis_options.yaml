@@ -1,0 +1,129 @@
+# This file configures the analyzer to use the lint rule set from `package:lint`
+
+# For apps, use the default set
+# include: package:lint/analysis_options.yaml
+
+# Packages, that may be distributed (i.e. via pub.dev) should use the package
+# version, resulting in a better pub score.
+# include: package:lint/analysis_options_package.yaml
+
+# You might want to exclude auto-generated files from dart analysis
+analyzer:
+  exclude:
+    - '**.freezed.dart'
+
+# You can customize the lint rules set to your own liking. A list of all rules
+# can be found at https://dart-lang.github.io/linter/lints/options/options.html
+linter:
+  rules:
+    - avoid_print
+    - prefer_const_declarations
+    - prefer_final_locals
+    - await_only_futures
+    - unnecessary_brace_in_string_interps
+    - unnecessary_const
+    - unnecessary_constructor_name
+    - unnecessary_getters_setters
+    - unnecessary_new
+    - unnecessary_null_aware_assignments
+    - unnecessary_null_checks
+    - unnecessary_null_in_if_null_operators
+    - unnecessary_nullable_for_final_variable_declarations
+    - unnecessary_overrides
+    - unnecessary_parenthesis
+    - unnecessary_raw_strings
+    - unnecessary_statements
+    #Remove unnecessary backslashes in strings.
+    - unnecessary_string_escapes
+    #DON'T use string interpolation if there's only a string expression in it.
+    - unnecessary_string_interpolations
+    #DON'T use this when not needed to avoid shadowing.
+    - unnecessary_this
+    #Use SizedBox to add whitespace to a layout.
+    #A Container is a heavier Widget than a SizedBox, and as bonus, SizedBox has a const constructor.
+    - sized_box_for_whitespace
+    #DON'T pass an argument that matches the corresponding parameter's default value.
+    - avoid_redundant_argument_values
+    #DO avoid relative imports for files in lib/.
+    - always_use_package_imports
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_constructors_over_static_methods
+    - prefer_is_empty
+    - prefer_is_not_empty
+    - prefer_is_not_operator
+    - prefer_contains
+    - prefer_final_in_for_each
+    - prefer_if_null_operators
+    - prefer_null_aware_method_calls
+    - prefer_null_aware_operators
+    - avoid_empty_else
+    - empty_statements
+    - avoid_slow_async_io
+    - avoid_type_to_string
+    - avoid_types_as_parameter_names
+    - avoid_web_libraries_in_flutter
+    - cancel_subscriptions
+    - close_sinks
+    - collection_methods_unrelated_type
+    - control_flow_in_finally
+    - literal_only_boolean_expressions
+    - no_duplicate_case_values
+    - prefer_void_to_null
+    - throw_in_finally
+    - unrelated_type_equality_checks
+    - valid_regexps
+    - avoid_double_and_int_checks
+    - avoid_final_parameters
+    - avoid_init_to_null
+    - avoid_returning_this
+    - avoid_single_cascade_in_expression_statements
+    - matching_super_parameters
+    - no_literal_bool_comparisons
+    - null_closures
+    - prefer_conditional_assignment
+    - prefer_function_declarations_over_variables
+    - prefer_generic_function_type_aliases
+    - prefer_iterable_whereType
+    - prefer_spread_collections
+    - prefer_typing_uninitialized_variables
+    - recursive_getters
+    - sized_box_shrink_expand
+    - slash_for_doc_comments
+    - type_init_formals
+    - unnecessary_late
+    - use_colored_box
+    - use_decorated_box
+    - use_is_even_rather_than_modulo
+    - use_named_constants
+    - use_rethrow_when_possible
+    - use_super_parameters
+    - use_to_and_as_if_applicable
+    - avoid_dynamic_calls
+  # Util classes are awesome!
+  # avoid_classes_with_only_static_members: false
+
+  # Make constructors the first thing in every class
+  # sort_constructors_first: false
+
+  # Choose wisely, but you don't have to
+  # prefer_double_quotes: true
+  # prefer_single_quotes: true
+
+  #Considering rules (15/7/24):
+  #empty_catches
+  #avoid_bool_literals_in_conditional_expressions
+  #avoid_escaping_inner_quotes
+  #avoid_setters_without_getters
+  #avoid_void_async
+  #directives_ordering
+  #flutter_style_todos
+  #omit_local_variable_types
+  #prefer_asserts_with_message
+  #sort_child_properties_last
+  #sort_constructors_first
+  #unnecessary_breaks
+  #use_if_null_to_convert_nulls_to_bools
+
+
+

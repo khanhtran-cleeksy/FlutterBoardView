@@ -47,48 +47,46 @@ class _BoardViewExampleState extends State<BoardViewExample>
 
   bool _movable = false;
 
-  BoardViewController boardViewController = new BoardViewController();
+  BoardViewController boardViewController = BoardViewController();
   RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+      RefreshController();
 
   @override
   @mustCallSuper
   Widget build(BuildContext context) {
     super.build(context);
-    List<BoardList> _lists = [];
+    final List<BoardList> _lists = [];
     for (int i = 0; i < _listData.length; i++) {
       _lists.add(_createBoardList(_listData[i], i) as BoardList);
     }
     _lists.add(BoardList(
       onDropList: (int? listIndex, int? oldListIndex) {
         //Update our local list data
-        var list = _listData[oldListIndex!];
+        final list = _listData[oldListIndex!];
         _listData.removeAt(oldListIndex);
         _listData.insert(listIndex!, list);
       },
       movable: false,
-      headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
-      backgroundColor: Color.fromARGB(255, 235, 236, 240),
+      headerBackgroundColor: const Color.fromARGB(255, 235, 236, 240),
+      backgroundColor: const Color.fromARGB(255, 235, 236, 240),
       customWidget: Container(color: Colors.black, width: 30, height: 50),
     ));
     return Scaffold(
       appBar: AppBar(
-        title: Text("Board View"),
+        title: const Text("Board View"),
       ),
       body: SafeArea(
         child: SmartRefresher(
           controller: _refreshController,
-          enablePullDown: true,
-          physics: ClampingScrollPhysics(),
+          physics: const ClampingScrollPhysics(),
 
           // physics: ClampingScrollPhysics(),
           onRefresh: () async {
-            await Future.delayed(Duration(milliseconds: 2000));
+            await Future.delayed(const Duration(milliseconds: 2000));
             _refreshController.refreshCompleted();
           },
           child: BoardView(
             lists: _lists,
-            showBottomScrollBar: true,
             margin: 8,
             width: MediaQuery.of(context).size.width,
             boardViewController: boardViewController,
@@ -98,7 +96,7 @@ class _BoardViewExampleState extends State<BoardViewExample>
                 _movable = false;
               });
               //Used to update our local item data
-              var item = _listData[oldListIndex!].items![oldItemIndex!];
+              final item = _listData[oldListIndex!].items![oldItemIndex!];
               _listData[listIndex!].items!.insert(itemIndex!, item);
               _listData[oldListIndex].items!.removeAt(oldItemIndex);
             },
@@ -116,7 +114,7 @@ class _BoardViewExampleState extends State<BoardViewExample>
         });
       },
       item: Card(
-        child: Container(
+        child: SizedBox(
           height: 100,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -128,7 +126,7 @@ class _BoardViewExampleState extends State<BoardViewExample>
   }
 
   Widget _createBoardList(BoardListObject list, int i) {
-    List<BoardItem> items = [];
+    final List<BoardItem> items = [];
     for (int i = 0; i < list.items!.length; i++) {
       items.insert(i, buildBoardItem(list.items![i]) as BoardItem);
     }
@@ -136,6 +134,7 @@ class _BoardViewExampleState extends State<BoardViewExample>
     return BoardList(
       onStartDragList: (int? listIndex) {},
       movable: !(_movable && i == 1),
+      immovableWidget: const Center(child: Text("Cannot drop item here")),
       // customWidget: list.items!.length == 20
       //     ? Container(
       //         color: Colors.black,
@@ -143,23 +142,23 @@ class _BoardViewExampleState extends State<BoardViewExample>
       //       )
       //     : null,
       onTapList: (int? listIndex) async {},
-      draggable: (items.length != 30),
+      draggable: items.length != 30,
       onDropList: (int? listIndex, int? oldListIndex) {
         //Update our local list data
-        var list = _listData[oldListIndex!];
+        final list = _listData[oldListIndex!];
         _listData.removeAt(oldListIndex);
         _listData.insert(listIndex!, list);
       },
       onLoadMore: _onLoadMore,
-      headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
-      backgroundColor: Color.fromARGB(255, 235, 236, 240),
+      headerBackgroundColor: const Color.fromARGB(255, 235, 236, 240),
+      backgroundColor: const Color.fromARGB(255, 235, 236, 240),
       header: [
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(5),
+            padding: const EdgeInsets.all(5),
             child: Text(
               list.title!,
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
           ),
         ),
@@ -171,18 +170,13 @@ class _BoardViewExampleState extends State<BoardViewExample>
         borderRadius: BorderRadius.circular(18),
       ),
     );
-
-    // return BoardList(
-    //   customWidget: Container(color: Colors.green, width: 50, height: 50),
-    //   // footer: Container(color: Colors.green, width: 50, height: 50),
-    // );
   }
 
   Future<bool> _onLoadMore(int listIndex) async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     setState(() {
       final data = List.generate(10, (index) {
-        return BoardItemObject(title: "Item more");
+        return BoardItemObject(title: "Item more $index");
       });
       _listData[listIndex].items!.addAll(data);
     });
