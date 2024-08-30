@@ -97,8 +97,8 @@ class _BoardViewExampleState extends State<BoardViewExample>
               });
               //Used to update our local item data
               final item = _listData[oldListIndex!].items![oldItemIndex!];
-              _listData[listIndex!].items!.insert(itemIndex!, item);
               _listData[oldListIndex].items!.removeAt(oldItemIndex);
+              _listData[listIndex!].items!.insert(itemIndex!, item);
             },
           ),
         ),

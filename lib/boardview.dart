@@ -35,8 +35,8 @@ class BoardView extends StatefulWidget {
   }
 }
 
-typedef OnDropItem = void Function(int? listIndex, int? itemIndex, int? oldListIndex,
-    int? oldItemIndex, BoardItemState state);
+typedef OnDropItem = void Function(int? listIndex, int? itemIndex,
+    int? oldListIndex, int? oldItemIndex, BoardItemState state);
 typedef OnDropList = void Function(int? listIndex);
 
 class BoardViewState extends State<BoardView>
@@ -177,29 +177,29 @@ class BoardViewState extends State<BoardView>
       if (!scrollController.hasClients) return;
       try {
         _setBoardHeight();
-        if (canDrag) {
-          if (scrollSinglePixels > width * .01 + currentPos) {
+        if (isMovingItemToOtherList) return;
+        if (!canDrag) return;
+        if (scrollSinglePixels > width * .01 + currentPos) {
+          canDrag = false;
+          _animateTo(_nextPage).then((value) {
+            _setCurrentPos();
+            _setCurrentPage(_nextPage);
+            canDrag = true;
+            _rebuild();
+          });
+        } else {
+          if (scrollSinglePixels < currentPos - width * .01) {
             canDrag = false;
-            _animateTo(_nextPage).then((value) {
+            _animateTo(_previousPage).then((value) {
               _setCurrentPos();
-              _setCurrentPage(_nextPage);
+              _setCurrentPage(_previousPage);
               canDrag = true;
               _rebuild();
             });
           } else {
-            if (scrollSinglePixels < currentPos - width * .01) {
-              canDrag = false;
-              _animateTo(_previousPage).then((value) {
-                _setCurrentPos();
-                _setCurrentPage(_previousPage);
-                canDrag = true;
-                _rebuild();
-              });
-            } else {
-              _animateTo(currentPage).whenComplete(() {
-                _setCurrentPos();
-              });
-            }
+            _animateTo(currentPage).whenComplete(() {
+              _setCurrentPos();
+            });
           }
         }
       } catch (e) {}
@@ -348,7 +348,7 @@ class BoardViewState extends State<BoardView>
     }
   }
 
-  bool isMovingToList = false;
+  bool isMovingItemToOtherList = false;
 
   BoardListState? targetList;
   bool isDraggingItem = false;
@@ -356,19 +356,19 @@ class BoardViewState extends State<BoardView>
   void onItemPointerMove(PointerMoveEvent event) {
     _moveToList(int page) {
       if (scrollController.hasClients) {
-        isMovingToList = true;
+        isMovingItemToOtherList = true;
         _animateTo(page).whenComplete(() {
           _setCurrentPos();
           _setCurrentPage(page);
           _rebuild();
           Future.delayed(const Duration(milliseconds: 500)).then(
-            (value) => isMovingToList = false,
+            (value) => isMovingItemToOtherList = false,
           );
         });
       }
     }
 
-    if (isMovingToList) return;
+    if (isMovingItemToOtherList) return;
     //
     final listWidth = widget.width;
     final trigger = widget.margin * 4 + triggerScrollHorizontal;
@@ -420,7 +420,9 @@ class BoardViewState extends State<BoardView>
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 decoration: BoxDecoration(
-                  color: isHighlight ? const Color(0xFFA3AABB) : const Color(0xFFD7DBE4),
+                  color: isHighlight
+                      ? const Color(0xFFA3AABB)
+                      : const Color(0xFFD7DBE4),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 height: dotSize,
