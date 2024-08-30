@@ -245,7 +245,7 @@ class BoardListState extends State<BoardList>
               item: item.item,
               draggable: item.draggable,
               index: index,
-              onStartDragItem: item.onStartDragItem,
+              onItemDraggingChanged: item.onItemDraggingChanged,
             );
           },
         ),

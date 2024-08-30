@@ -108,7 +108,7 @@ class _BoardViewExampleState extends State<BoardViewExample>
 
   Widget buildBoardItem(BoardItemObject itemObject) {
     return BoardItem(
-      onStartDragItem: (int? listIndex, int? itemIndex, BoardItemState? state) {
+      onItemDraggingChanged: (listIndex, itemIndex, isDragging) {
         setState(() {
           _movable = true;
         });

@@ -460,7 +460,7 @@ class BoardViewState extends State<BoardView>
     targetList = listStates[stageIndex];
   }
 
-  void onItemPointerMoveList(PointerMoveEvent event) {
+  void onItemPointerTriggerScrollList(PointerMoveEvent event) {
     if (targetList == null) return;
     final box =
         targetList!.listKey.currentContext!.findRenderObject() as RenderBox;

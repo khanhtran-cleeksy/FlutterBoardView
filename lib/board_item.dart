@@ -5,17 +5,14 @@ import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-typedef OnTapItem = void Function(int? listIndex, int? itemIndex, BoardItemState state);
-typedef OnStartDragItem = void Function(
-    int? listIndex, int? itemIndex, BoardItemState state);
-typedef OnDragItem = void Function(int oldListIndex, int oldItemIndex, int newListIndex,
-    int newItemIndex, BoardItemState state);
+typedef OnItemDraggingChanged = void Function(
+    int? listIndex, int? itemIndex, bool isDragging);
 
 class BoardItem extends StatefulWidget {
   final BoardListState? boardList;
   final Widget? item;
   final int? index;
-  final OnStartDragItem? onStartDragItem;
+  final OnItemDraggingChanged? onItemDraggingChanged;
   final bool draggable;
 
   const BoardItem({
@@ -23,7 +20,7 @@ class BoardItem extends StatefulWidget {
     this.boardList,
     this.item,
     this.index,
-    this.onStartDragItem,
+    this.onItemDraggingChanged,
     this.draggable = true,
   });
 
@@ -105,17 +102,16 @@ class BoardItemState extends State<BoardItem>
 
   void _onPointerMove(PointerMoveEvent event) {
     boardView.onItemPointerMove(event);
-    boardView.onItemPointerMoveList(event);
+    boardView.onItemPointerTriggerScrollList(event);
   }
 
   void _onItemDraggingChanged(DragAndDropItem item, bool dragging) {
     boardView.setIsDraggingItem(dragging);
-    if (dragging)
-      widget.onStartDragItem!(
-        boardList.widget.index,
-        widget.index,
-        this,
-      );
+    widget.onItemDraggingChanged!(
+      boardList.widget.index,
+      widget.index,
+      dragging,
+    );
   }
 
   void _onPointerUp(PointerUpEvent event) {
