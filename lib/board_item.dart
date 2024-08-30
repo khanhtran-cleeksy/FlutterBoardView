@@ -89,10 +89,11 @@ class BoardItemState extends State<BoardItem>
     final oldListIndex = oldItem.listIndex;
     final oldItemIndex = oldItem.itemIndex;
     if (newListIndex == oldListIndex &&
-        newItemIndex != oldItemIndex &&
+        newItemIndex > oldItemIndex &&
         newItemIndex > 0) {
       newItemIndex--;
     }
+    //debugPrint(newItemIndex.toString());
     boardView.widget.onDropItem!(
       newListIndex,
       newItemIndex,
