@@ -17,7 +17,7 @@ dependencies:
   drag_and_drop_lists:
     git:
       url: https://github.com/khanhtran-cleeksy-mobile/DragAndDropLists
-      ref: master
+      ref: v4.9.24
 
 dev_dependencies:
   flutter_test:
